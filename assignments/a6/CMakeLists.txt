@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8.7)
 
 # initialize project
-set(proj_name tech_proj)
+set(proj_name assignment6)
 project(${proj_name})
+
+add_definitions(-w)
 
 # set paths
 if(NOT proj_path)
@@ -10,7 +12,7 @@ if(NOT proj_path)
 endif(NOT proj_path)
 
 if(NOT root_path)
-  set(root_path ${proj_src_path}/../)
+  set(root_path ${proj_src_path}/../../)
   add_definitions(-DROOT_PATH=\"${root_path}\")
 endif(NOT root_path)
 
@@ -18,11 +20,11 @@ endif(NOT root_path)
 include_directories(${root_path}/ext/eigen)
 
 # include hearder and source files in /src
-file(GLOB_RECURSE src_cpp ${root_path}/utils/*.cpp)
-file(GLOB_RECURSE src_h ${root_path}/utils/*.h)
-list(APPEND src_files ${utils_cpp} ${utils_h})
-source_group("utils" FILES ${utils_cpp} ${utils_h})
-include_directories(${root_path}/utils)
+file(GLOB_RECURSE src_cpp ${root_path}/src/*.cpp)
+file(GLOB_RECURSE src_h ${root_path}/src/*.h)
+list(APPEND src_files ${src_cpp} ${src_h})
+source_group("src" FILES ${src_cpp} ${src_h})
+include_directories(${root_path}/src)
 
 # include hearder and source files in /proj/a*
 file(GLOB_RECURSE proj_cpp ${proj_src_path}/*.cpp)
