@@ -1,4 +1,5 @@
-/*This is your first vertex shader!*/
+/* Vertex shader for texture and normal mappings */
+// Eric Lu, COSC 077, 23W, 2/14/23
 
 #version 330 core
 
@@ -15,15 +16,16 @@ layout (std140) uniform camera
 };
 
 /*input variables*/
+
 layout (location=0) in vec4 pos;		/*vertex position*/
-layout (location=1) in vec4 color;		/*vertex color*/
-layout (location=2) in vec4 normal;		/*vertex normal*/	
-layout (location=3) in vec4 uv;			/*vertex uv*/		
-layout (location=4) in vec4 tangent;	/*vertex tangent*/	
 
 /*output variables*/
+out vec3 vtx_pos;
 
 void main()												
 {
+	/*camera-transformed position. do not modify.*/
+	//// TODO: set your out variables
 	gl_Position=pvm*vec4(pos.xyz,1.f);
-}	
+	vtx_pos = pos.xyz;
+}
