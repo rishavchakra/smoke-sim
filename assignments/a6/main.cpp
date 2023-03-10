@@ -2,6 +2,7 @@
 // Main
 // Dartmouth COSC 77/177 Computer Graphics, starter code
 // Contact: Bo Zhu (bo.zhu@dartmouth.edu)
+// Edited by Eric Lu, Rishav Chakravarty, Camden Hao
 //#####################################################################
 #include <iostream>
 #include <random>
@@ -38,6 +39,20 @@ public:
 		OpenGLViewer::Initialize();
 	}
 
+	////This function adds a mesh object from an obj file
+	int Add_Obj_Mesh_Object(std::string obj_file_name)
+	{
+		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+
+		Array<std::shared_ptr<TriangleMesh<3> > > meshes;
+		Obj::Read_From_Obj_File_Discrete_Triangles(obj_file_name,meshes);
+		mesh_obj->mesh=*meshes[0];
+		std::cout<<"load tri_mesh from obj file, #vtx: "<<mesh_obj->mesh.Vertices().size()<<", #ele: "<<mesh_obj->mesh.Elements().size()<<std::endl;		
+
+		mesh_object_array.push_back(mesh_obj);
+		return (int)mesh_object_array.size()-1;
+	}
+
 	void Add_Shaders()
 	{
 		////format: vertex shader name, fragment shader name, shader name
@@ -45,13 +60,15 @@ public:
 
 		////SHADOW TODO: uncomment next three lines to import shadow shaders
 		//OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_1_shadow.vert","object_1_shadow.frag","object_1_shadow");	
-		//OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_2_shadow.vert","object_2_shadow.frag","object_2_shadow");	
+		//OpenGLShaderLibrary::Instance()->Add_Shader_From_File("sky_sphere_shadow.vert","sky_sphere_shadow.frag","sky_sphere_shadow");	
 		//OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_3_shadow.vert","object_3_shadow.frag","object_3_shadow");	
 
 		////SHADOW TODO: comment out next three lines
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("normal_mapping.vert","normal_mapping.frag","object_1");	
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_2.vert","object_2.frag","object_2");	
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_3.vert","object_3.frag","object_3");	
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("sky_sphere.vert","sky_sphere.frag","sky_sphere");	
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_3.vert","object_3.frag","object_3");
+
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("wave.vert","wave.frag","wave");
 	}
 
 	void Add_Textures()
@@ -62,12 +79,11 @@ public:
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_body.jpg", "plane_body_albedo");	
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_body.jpg", "plane_body_normal");		
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_1_albedo");		
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_1_normal");
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_2_albedo");		
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_2_normal");
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_1_normal");	
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_3_albedo");		
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_3_normal");
-
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("sky_sphere_albedo.png", "sky_sphere_albedo");
+		// OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "sky_sphere_normal");
 	}
 
 	void Add_Background()
@@ -161,31 +177,31 @@ public:
 		mesh_object_array.push_back(mesh_obj);
 		return (int)mesh_object_array.size()-1;
 	}
-	////this is an example of adding a spherical mesh object generated analytically
-	// int Add_Object_2()
-	// {
-	// 	auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
 
-	// 	real radius=1.;
-	// 	Initialize_Sphere_Mesh(radius,&mesh_obj->mesh,3);		////add a sphere with radius=1. if the obj file name is not specified
+	int Add_Sky_Sphere()
+	{
+		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+
+		real radius=10000.;
+		Initialize_Sphere_Mesh(radius,&mesh_obj->mesh,3);		////add a sphere with radius=1. if the obj file name is not specified
 		
 	// 	////set up shader
-	// 	//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_2_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-	// 	mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_2"));
+	// 	//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("sky_sphere_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("sky_sphere"));
 		
 	// 	////set up texture
-	// 	mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("object_2_albedo"));
-	// 	mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("object_2_normal"));
+		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("sky_sphere_albedo"));
+		// mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("sky_sphere_normal")); // uv normals added manually
 		
-	// 	Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
-	// 	Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: Set Shading Mode to Shadow
+		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
+		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: Set Shading Mode to Shadow
 		
 	// 	////initialize
-	// 	mesh_obj->Set_Data_Refreshed();
-	// 	mesh_obj->Initialize();	
-	// 	mesh_object_array.push_back(mesh_obj);
-	// 	return (int)mesh_object_array.size()-1;
-	// }
+		mesh_obj->Set_Data_Refreshed();
+		mesh_obj->Initialize();	
+		mesh_object_array.push_back(mesh_obj);
+		return (int)mesh_object_array.size()-1;
+	}
 
 	// ////this is an example of adding an object with manually created triangles and vertex attributes
 	// int Add_Object_3()
@@ -231,6 +247,42 @@ public:
 	// 	return (int)mesh_object_array.size()-1;
 	// }
 
+	int Add_Object_Wave() {
+		////add the plane mesh object
+		int obj_idx = Add_Obj_Mesh_Object("plane.obj");
+		auto plane_obj = mesh_object_array[obj_idx];
+		plane_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("wave"));
+
+		Set_Polygon_Mode(plane_obj, PolygonMode::Fill);
+		Set_Shading_Mode(plane_obj, ShadingMode::Texture);
+		plane_obj->Set_Data_Refreshed();
+		plane_obj->Initialize();
+	}
+
+	int Add_Object_Skysphere() {
+		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+
+		real radius=100.;
+		Initialize_Sphere_Mesh(radius,&mesh_obj->mesh,3);		////add a sphere with radius=1. if the obj file name is not specified
+		
+		////set up shader
+		// mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("sky_sphere_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("sky_sphere"));
+		
+		////set up texture
+		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("sky_sphere_albedo"));
+		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("sky_sphere_normal"));
+		
+		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
+		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: Set Shading Mode to Shadow
+		
+		////initialize
+		mesh_obj->Set_Data_Refreshed();
+		mesh_obj->Initialize();	
+		mesh_object_array.push_back(mesh_obj);
+		return (int)mesh_object_array.size()-1;
+	}
+
 	//// Use this function to set up lighting only if you are using Shadow mode
 	void Init_Lighting() {
 		auto dir_light = OpenGLUbos::Add_Directional_Light(glm::vec3(-1.f, -1.f, -1.f));//Light direction
@@ -260,10 +312,10 @@ public:
 		Add_Textures();
 
 		Add_Background();
+		Add_Object_Wave();
 		Plane_Object();
 		Plane_Wings_Object();
-		// Add_Object_2();
-		// Add_Object_3();
+		Add_Sky_Sphere();
 
 		Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}
