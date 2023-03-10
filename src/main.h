@@ -39,21 +39,3 @@ struct DataPaths {
   void addTexturePath(TexturePaths texture) { textures.push_back(texture); }
   void addMeshPath(MeshPaths mesh) { meshes.push_back(mesh); }
 };
-
-class TechProjDriver : public Driver, public OpenGLViewer {
-  using Base = Driver;
-
-public:
-  Array<TriangleMesh<3> *> triangle_meshes;
-
-  virtual void Initialize() { OpenGLViewer::Initialize(); }
-
-  virtual void Run() { OpenGLViewer::Run(); }
-
-  virtual void Initialize_Data();
-
-  void Init_Lighting();
-  void Init_Shaders();
-  void Init_Textures();
-  void Init_Background();
-};

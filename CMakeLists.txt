@@ -4,4 +4,5 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 add_definitions(-DUSE_STB)
+add_definitions(-w)
 add_subdirectory(src)
