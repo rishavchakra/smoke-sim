@@ -18,7 +18,7 @@ To generate build files (e.g., an .sln file for Windows or a makefile for Linux)
 
 ### Executable
 
-The executables are generated in the Release or Debug folder under the subdirectory (e.g., `build/a1/Release`) for Windows and just in e.g. `build/a1` for Linux/Mac.
+The executables are generated in the Release or Debug folder under the subdirectory (e.g., `build/a6/Release`) for Windows and just in e.g. `build/a6` for Linux/Mac.
 
 
 ## 1. Compile and run the first assignment:
@@ -61,12 +61,12 @@ Note: you need to run the command in your root folder (dartmouth-cg-starter-code
 
 To test if everything works correctly you can run:
 
-    .\scripts\run_assignment.bat a1 1 [Windows]
-    ./scripts/run_assignment.sh a1 1 [Linux/Mac]
+    .\scripts\run_assignment.bat a6 1 [Windows]
+    ./scripts/run_assignment.sh a6 1 [Linux/Mac]
 
 This will:
 
-- Compile the code for the assignment 1 and any dependencies
+- Compile the code for the assignment 6 and any dependencies
 - Popup a window and show an OpenGL window
 
 ### Step 4: Start implementing!
