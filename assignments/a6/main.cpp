@@ -2,6 +2,7 @@
 // Main
 // Dartmouth COSC 77/177 Computer Graphics, starter code
 // Contact: Bo Zhu (bo.zhu@dartmouth.edu)
+// Edited by Eric Lu, Rishav Chakravarty, Camden Hao
 //#####################################################################
 #include <iostream>
 #include <random>
@@ -38,6 +39,20 @@ public:
 		OpenGLViewer::Initialize();
 	}
 
+	////This function adds a mesh object from an obj file
+	int Add_Obj_Mesh_Object(std::string obj_file_name)
+	{
+		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+
+		Array<std::shared_ptr<TriangleMesh<3> > > meshes;
+		Obj::Read_From_Obj_File_Discrete_Triangles(obj_file_name,meshes);
+		mesh_obj->mesh=*meshes[0];
+		std::cout<<"load tri_mesh from obj file, #vtx: "<<mesh_obj->mesh.Vertices().size()<<", #ele: "<<mesh_obj->mesh.Elements().size()<<std::endl;		
+
+		mesh_object_array.push_back(mesh_obj);
+		return (int)mesh_object_array.size()-1;
+	}
+
 	void Add_Shaders()
 	{
 		////format: vertex shader name, fragment shader name, shader name
@@ -51,7 +66,9 @@ public:
 		////SHADOW TODO: comment out next three lines
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_1.vert","object_1.frag","object_1");	
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_2.vert","object_2.frag","object_2");	
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_3.vert","object_3.frag","object_3");	
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_3.vert","object_3.frag","object_3");
+
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("wave.vert","wave.frag","wave");
 	}
 
 	void Add_Textures()
@@ -63,6 +80,7 @@ public:
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_2_normal");
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_3_albedo");		
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_3_normal");
+
 
 	}
 
@@ -186,6 +204,18 @@ public:
 		return (int)mesh_object_array.size()-1;
 	}
 
+	int Add_Object_Wave() {
+		////add the plane mesh object
+		int obj_idx = Add_Obj_Mesh_Object("plane.obj");
+		auto plane_obj = mesh_object_array[obj_idx];
+		plane_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("wave"));
+
+		Set_Polygon_Mode(plane_obj, PolygonMode::Fill);
+		Set_Shading_Mode(plane_obj, ShadingMode::Texture);
+		plane_obj->Set_Data_Refreshed();
+		plane_obj->Initialize();
+	}
+
 	//// Use this function to set up lighting only if you are using Shadow mode
 	void Init_Lighting() {
 		auto dir_light = OpenGLUbos::Add_Directional_Light(glm::vec3(-1.f, -1.f, -1.f));//Light direction
@@ -218,6 +248,7 @@ public:
 		Add_Object_1();
 		Add_Object_2();
 		Add_Object_3();
+		Add_Object_Wave();
 
 		//Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}
