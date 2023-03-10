@@ -64,7 +64,7 @@ public:
 		//OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_3_shadow.vert","object_3_shadow.frag","object_3_shadow");	
 
 		////SHADOW TODO: comment out next three lines
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_1.vert","object_1.frag","object_1");	
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("normal_mapping.vert","normal_mapping.frag","object_1");	
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_2.vert","object_2.frag","object_2");	
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_3.vert","object_3.frag","object_3");
 
@@ -74,6 +74,10 @@ public:
 	void Add_Textures()
 	{
 		////format: image name, texture name
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_wings.jpg", "plane_wings_albedo");
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_wings.jpg", "plane_wings_normal");
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_body.jpg", "plane_body_albedo");	
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_body.jpg", "plane_body_normal");		
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_1_albedo");		
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_1_normal");
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_2_albedo");		
@@ -92,12 +96,12 @@ public:
 	}
 
 	////this is an example of adding a mesh object read from obj file
-	int Add_Object_1()
+	int Plane_Object()
 	{
 		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
 
 		////read mesh file
-		std::string obj_file_name="bunny.obj";
+		std::string obj_file_name="airplane.obj";
 		Array<std::shared_ptr<TriangleMesh<3> > > meshes;
 		Obj::Read_From_Obj_File_Discrete_Triangles(obj_file_name,meshes);
 		mesh_obj->mesh=*meshes[0];
@@ -122,8 +126,8 @@ public:
 		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
 		
 		////set up texture
-		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("object_1_albedo"));
-		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("object_1_normal"));
+		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("plane_body_albedo"));
+		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("plane_body_normal"));
 		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
 		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: set Shading Mode to Shadow
 		
@@ -134,75 +138,116 @@ public:
 		return (int)mesh_object_array.size()-1;
 	}
 
+	int Plane_Wings_Object()
+	{
+		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+
+		////read mesh file
+		std::string obj_file_name="airplane.obj";
+		Array<std::shared_ptr<TriangleMesh<3> > > meshes;
+		Obj::Read_From_Obj_File_Discrete_Triangles(obj_file_name,meshes);
+		mesh_obj->mesh=*meshes[1];
+
+		////This is an example showing how to access and modify the values of vertices on the CPU end.
+		//std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
+		//int vn=(int)vertices.size();
+		//for(int i=0;i<vn;i++){
+		//	vertices[i]+=Vector3(1.,0.,0.);
+		//}
+
+		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
+		////The code for passing the matrix to the shader is in OpenGLMesh.h
+		mesh_obj->model_matrix=
+			glm::mat4(1.f,0.f,0.f,0.f,		////column 0
+					  0.f,1.f,0.f,0.f,		////column 1
+					  0.f,0.f,1.f,0.f,		////column 2
+					  0.f,1.f,0.f,1.f);		////column 3	////set the translation in the last column
+
+		////set up shader
+		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
+		
+		////set up texture
+		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("plane_wings_albedo"));
+		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("plane_wings_normal"));
+		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
+		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: set Shading Mode to Shadow
+		
+		////initialize
+		mesh_obj->Set_Data_Refreshed();
+		mesh_obj->Initialize();	
+		mesh_object_array.push_back(mesh_obj);
+		return (int)mesh_object_array.size()-1;
+	}
 	////this is an example of adding a spherical mesh object generated analytically
-	int Add_Object_2()
-	{
-		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+	// int Add_Object_2()
+	// {
+	// 	auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
 
-		real radius=1.;
-		Initialize_Sphere_Mesh(radius,&mesh_obj->mesh,3);		////add a sphere with radius=1. if the obj file name is not specified
+	// 	real radius=1.;
+	// 	Initialize_Sphere_Mesh(radius,&mesh_obj->mesh,3);		////add a sphere with radius=1. if the obj file name is not specified
 		
-		////set up shader
-		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_2_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_2"));
+	// 	////set up shader
+	// 	//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_2_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
+	// 	mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_2"));
 		
-		////set up texture
-		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("object_2_albedo"));
-		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("object_2_normal"));
+	// 	////set up texture
+	// 	mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("object_2_albedo"));
+	// 	mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("object_2_normal"));
 		
-		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
-		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: Set Shading Mode to Shadow
+	// 	Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
+	// 	Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: Set Shading Mode to Shadow
 		
-		////initialize
-		mesh_obj->Set_Data_Refreshed();
-		mesh_obj->Initialize();	
-		mesh_object_array.push_back(mesh_obj);
-		return (int)mesh_object_array.size()-1;
-	}
+	// 	////initialize
+	// 	mesh_obj->Set_Data_Refreshed();
+	// 	mesh_obj->Initialize();	
+	// 	mesh_object_array.push_back(mesh_obj);
+	// 	return (int)mesh_object_array.size()-1;
+	// }
 
-	////this is an example of adding an object with manually created triangles and vertex attributes
-	int Add_Object_3()
-	{
-		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
-		auto& mesh=mesh_obj->mesh;
+	// ////this is an example of adding an object with manually created triangles and vertex attributes
+	// int Add_Object_3()
+	// {
+	// 	auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+	// 	auto& mesh=mesh_obj->mesh;
 
-		////vertex position
-		std::vector<Vector3> triangle_vertices={Vector3(-1,-1,-1),Vector3(1,-1,-1),Vector3(-1,-1,1),Vector3(1,-1,1)};
-		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
-		vertices=triangle_vertices;
+	// 	////vertex position
+	// 	std::vector<Vector3> triangle_vertices={Vector3(-1,-1,-1),Vector3(1,-1,-1),Vector3(-1,-1,1),Vector3(1,-1,1)};
+	// 	std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
+	// 	vertices=triangle_vertices;
 			
-		////vertex color
-		std::vector<Vector4f>& vtx_color=mesh_obj->vtx_color;
-		vtx_color={Vector4f(1.f,0.f,0.f,1.f),Vector4f(0.f,1.f,0.f,1.f),Vector4f(0.f,0.f,1.f,1.f),Vector4f(1.f,1.f,0.f,1.f)};
+	// 	////vertex color
+	// 	std::vector<Vector4f>& vtx_color=mesh_obj->vtx_color;
+	// 	vtx_color={Vector4f(1.f,0.f,0.f,1.f),Vector4f(0.f,1.f,0.f,1.f),Vector4f(0.f,0.f,1.f,1.f),Vector4f(1.f,1.f,0.f,1.f)};
 
-		////vertex normal
-		std::vector<Vector3>& vtx_normal=mesh_obj->vtx_normal;
-		vtx_normal={Vector3(0.,1.,0.),Vector3(0.,1.,0.),Vector3(0.,1.,0.),Vector3(0.,1.,0.)};
+	// 	////vertex normal
+	// 	std::vector<Vector3>& vtx_normal=mesh_obj->vtx_normal;
+	// 	vtx_normal={Vector3(0.,1.,0.),Vector3(0.,1.,0.),Vector3(0.,1.,0.),Vector3(0.,1.,0.)};
 
-		////vertex uv
-		std::vector<Vector2>& uv=mesh_obj->mesh.Uvs();
-		uv={Vector2(0.,0.),Vector2(1.,0.),Vector2(0.,1.),Vector2(1.,1.)};
+	// 	////vertex uv
+	// 	std::vector<Vector2>& uv=mesh_obj->mesh.Uvs();
+	// 	uv={Vector2(0.,0.),Vector2(1.,0.),Vector2(0.,1.),Vector2(1.,1.)};
 
-		////mesh elements
-		std::vector<Vector3i>& elements=mesh_obj->mesh.Elements();
-		elements={Vector3i(0,1,3),Vector3i(0,3,2)};
+	// 	////mesh elements
+	// 	std::vector<Vector3i>& elements=mesh_obj->mesh.Elements();
+	// 	elements={Vector3i(0,1,3),Vector3i(0,3,2)};
 
-		////set up shader
-		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3"));
+	// 	////set up shader
+	// 	//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
+	// 	mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3"));
 		
-		////set up texture
-		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("object_3_albedo"));
-		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("object_3_normal"));
-		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
-		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: Set Shading Mode to Shadow
+	// 	////set up texture
+	// 	mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("object_3_albedo"));
+	// 	mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("object_3_normal"));
+	// 	Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
+	// 	Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: Set Shading Mode to Shadow
 
-		////initialize
-		mesh_obj->Set_Data_Refreshed();
-		mesh_obj->Initialize();	
-		mesh_object_array.push_back(mesh_obj);
-		return (int)mesh_object_array.size()-1;
-	}
+	// 	////initialize
+	// 	mesh_obj->Set_Data_Refreshed();
+	// 	mesh_obj->Initialize();	
+	// 	mesh_object_array.push_back(mesh_obj);
+	// 	return (int)mesh_object_array.size()-1;
+	// }
 
 	int Add_Object_Wave() {
 		////add the plane mesh object
@@ -245,13 +290,13 @@ public:
 		Add_Textures();
 
 		Add_Background();
-		Add_Object_1();
-		Add_Object_2();
-		Add_Object_3();
 		Add_Object_Wave();
+		Plane_Object();
+		Plane_Wings_Object();
 
-		//Init_Lighting(); ////SHADOW TODO: uncomment this line
+		Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}
+	
 
 	////Goto next frame 
 	virtual void Toggle_Next_Frame()
