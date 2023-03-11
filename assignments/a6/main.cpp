@@ -104,12 +104,14 @@ public:
 		Obj::Read_From_Obj_File_Discrete_Triangles(obj_file_name,meshes);
 		mesh_obj->mesh=*meshes[0];
 
-		////This is an example showing how to access and modify the values of vertices on the CPU end.
-		//std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
-		//int vn=(int)vertices.size();
-		//for(int i=0;i<vn;i++){
-		//	vertices[i]+=Vector3(1.,0.,0.);
-		//}
+		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
+		int vn=(int)vertices.size();
+		for(int i=0;i<vn;i++){
+			vertices[i][0] *= .5;
+			vertices[i][1] *= .5;
+			vertices[i][2] *= .5;
+			vertices[i][2] *= -1.;
+		}
 
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
 		////The code for passing the matrix to the shader is in OpenGLMesh.h
@@ -147,11 +149,14 @@ public:
 		mesh_obj->mesh=*meshes[1];
 
 		////This is an example showing how to access and modify the values of vertices on the CPU end.
-		//std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
-		//int vn=(int)vertices.size();
-		//for(int i=0;i<vn;i++){
-		//	vertices[i]+=Vector3(1.,0.,0.);
-		//}
+		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
+		int vn=(int)vertices.size();
+		for(int i=0;i<vn;i++){
+			vertices[i][0] *= .5;
+			vertices[i][1] *= .5;
+			vertices[i][2] *= .5;
+			vertices[i][2] *= -1.;
+		}
 
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
 		////The code for passing the matrix to the shader is in OpenGLMesh.h
@@ -299,8 +304,8 @@ public:
 		//point_light->dif = glm::vec4(.9,.8,.7, 1.0);
 
 		//This is an example to add a spot light
-		//auto spot_light = OpenGLUbos::Add_Spot_Light(glm::vec3(1.,1.,1.),glm::vec3(1.,1.,1.));//first param: position, second param: direction
-		//spot_light->dif = glm::vec4(.9,.8,.7, 1.0);
+		// auto spot_light = OpenGLUbos::Add_Spot_Light(glm::vec3(1.,1.,1.),glm::vec3(1.,1.,1.));//first param: position, second param: direction
+		// spot_light->dif = glm::vec4(.9,.8,.7, 1.0);
 
 		OpenGLUbos::Set_Ambient(glm::vec4(.01f, .01f, .02f, 1.f));
 		OpenGLUbos::Update_Lights_Ubo();	
