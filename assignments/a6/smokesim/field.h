@@ -1,11 +1,25 @@
 #pragma once
 
 #include "Common.h"
-class Field {
+struct Field {
   float ***data;
   Vector3i resolution;
+  Vector3 size;
 
-public:
   Field(Vector3i resolution);
   ~Field();
+
+  float interp(Vector3 pos);
+  void set(Vector3i inds, float val);
+};
+
+struct VectorField {
+  Field x;
+  Field y;
+  Field z;
+
+  VectorField(Vector3i resolution);
+
+  Vector3 interp(Vector3 pos);
+  void set(Vector3i inds, Vector3 val);
 };
