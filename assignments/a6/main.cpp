@@ -317,7 +317,7 @@ public:
 		Plane_Wings_Object();
 		Add_Sky_Sphere();
 
-		Init_Lighting(); ////SHADOW TODO: uncomment this line
+		// Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}
 	
 

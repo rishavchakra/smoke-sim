@@ -87,21 +87,6 @@ float height(vec2 v){
 	// Your implementation ends here
 	return h;
 }
-///////////// Part 2b /////////////////////
-/* compute the normal vector at v by find the points d to the left/right and d forward/backward
-    and using a cross product. Be sure to normalize the result */
-vec3 compute_normal(vec2 v, float d)
-{	
-	vec3 normal_vector = vec3(0,0,0);
-	// Your implementation starts here
-	vec3 v1 = vec3(v.x + d, v.y, height(vec2(v.x + d, v.y)));
-    vec3 v2 = vec3(v.x - d, v.y, height(vec2(v.x - d, v.y)));
-    vec3 v3 = vec3(v.x, v.y + d, height(vec2(v.x, v.y + d)));
-    vec3 v4 = vec3(v.x, v.y - d, height(vec2(v.x, v.y - d)));
-	normal_vector = normalize(cross(v3 - v1, v2 - v1));
-	// Your implementation ends here
-	return normal_vector;
-}
 
 float water(vec2 p) {
     float ht = 0;
@@ -122,6 +107,22 @@ float water(vec2 p) {
     return ht;
 }
 
+///////////// Part 2b /////////////////////
+/* compute the normal vector at v by find the points d to the left/right and d forward/backward
+    and using a cross product. Be sure to normalize the result */
+vec3 compute_normal(vec2 v, float d)
+{	
+	vec3 normal_vector = vec3(0,0,0);
+	// Your implementation starts here
+	vec3 v1 = vec3(v.x + d, v.y, water(vec2(v.x + d, v.y)));
+    vec3 v2 = vec3(v.x - d, v.y, water(vec2(v.x - d, v.y)));
+    vec3 v3 = vec3(v.x, v.y + d, water(vec2(v.x, v.y + d)));
+    vec3 v4 = vec3(v.x, v.y - d, water(vec2(v.x, v.y - d)));
+	normal_vector = normalize(cross(v3 - v1, v2 - v1));
+	// Your implementation ends here
+	return normal_vector;
+}
+
 ///////////// Part 2c /////////////////////
 /* complete the get_color function by setting emissiveColor using some function of height/normal vector/noise */
 /* put your Phong/Lambertian lighting model here to synthesize the lighting effect onto the terrain*/
@@ -129,13 +130,13 @@ vec3 get_color(vec2 v)
 {
 	float h = water(v);
 	vec3 vtx_normal = compute_normal(v, 0.01);
-	vec3 emissiveColor = mix(vec3(0.0, 0.0, 0.88), vec3(0., 0., 0.9), h);
+	vec3 emissiveColor = mix(vec3(0, 0, 0.6), vec3(0, 0, 0.9), h / 100);
 	vec3 lightingColor= vec3(1.,1.,1.);
 	// Your implementation starts here
 	
 	/*This part is the same as your previous assignment. Here we provide a default parameter set for the hard-coded lighting environment. Feel free to change them.*/
-	const vec3 LightPosition = vec3(3, 1, 3);
-	const vec3 LightIntensity = vec3(20);
+	const vec3 LightPosition = vec3(0, 0, 5000);
+	const vec3 LightIntensity = vec3(60000000);
 	const vec3 ka = 0.1*vec3(1., 1., 1.);
 	const vec3 kd = 0.7*vec3(1., 1., 1.);
 	const vec3 ks = vec3(2.);
@@ -148,8 +149,8 @@ vec3 get_color(vec2 v)
 	vec3 ambColor = ka;
 	lightingColor = kd * _localLight * max(0., dot(_lightDir, normal));
 	// Your implementation ends here
-    // return emissiveColor*lightingColor;
-	return emissiveColor;
+    return emissiveColor*lightingColor;
+	// return emissiveColor;
 }
 void main()
 {
