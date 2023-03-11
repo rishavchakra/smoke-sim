@@ -24,9 +24,11 @@ class SmokeSimulation {
   Field fTemp;
   VectorField fVel;
 
+  std::vector<Particle> particles;
+
 public:
   // Constructor
-  SmokeSimulation(Vector3i size, Vector3i resolution);
+  SmokeSimulation(Vector3 size, Vector3i resolution, int numParticles);
   // Destructor
   ~SmokeSimulation();
   // Step forward in the physics simulation by a timestep dt
