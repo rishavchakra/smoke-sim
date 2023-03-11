@@ -34,7 +34,7 @@ vec2 hash2(vec2 v)
     // Your implementation starts here
     // From Book of Shaders
     float n = fract(sin(dot(v.xy, vec2(12.9898,78.233))) * 43758.5453123);
-    rand = vec2(cos(n * 2.0 * 3.14159265 - iTime), sin(n * 2.0 * 3.14159265 + iTime)); // Return as angle
+    rand = vec2(cos(n * 2.0 * 3.14159265), sin(n * 2.0 * 3.14159265)); // Return as angle
     // Your implementation ends here
 
     // rand  = 50.0 * 1.05 * fract(v * 0.3183099 + vec2(0.71, 0.113)); // Sample provided hash
@@ -110,8 +110,27 @@ float height(vec2 v){
     return h;
 }
 
+float water(vec2 p) {
+    float ht = 0;
+    vec2 sh1 = 0.001 * vec2(iTime * 320.0, iTime * 240.0);
+    vec2 sh2 = 0.001 * vec2(iTime * 380.0, iTime * -260.0);
+
+    float wave = 0.0;
+    wave += sin(p.x * 0.022 + sh2.x) * 4.4;
+    wave += sin(p.x * 0.0170 + p.y * 0.010 + sh2.x * 1.120) * 4.0;
+    wave -= sin(p.x * 0.001 + p.y * 0.005 + sh2.x * 0.120) * 4.0;
+
+    wave += sin(p.x * 0.022 + p.y * 0.012 + sh2.x * 3.44) * 5.0;
+    wave += sin(p.x * 0.031 + p.y * 0.012 + sh2.x * 4.28) * 2.5 ;
+    wave *= 1.0;
+    wave -= noiseOctave(p * 0.005 - sh2 * 0.5, 6) * 1.0 * 25.;
+    
+    ht += wave;
+    return ht;
+}
+
 void main()
 {
-    vtx_pos = (vec4(pos.xy, height(pos.xy), 1)).xyz;
+    vtx_pos = (vec4(pos.x - 10000, pos.y - 10000, water(pos.xy), 1)).xyz;
     gl_Position = pvm * vec4(vtx_pos,1);
 }
