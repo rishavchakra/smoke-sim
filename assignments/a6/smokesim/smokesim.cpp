@@ -122,3 +122,24 @@ void SmokeSimulation::advect_vel(float dt) {
   }
   fVel = newVel;
 }
+
+// Advect the particles themselves based on the fields
+void SmokeSimulation::advect_particles(float dt) {
+  for (int i = 0; i < particles.size(); i++) {
+    Vector3 cur_pos = particles[i].pos;
+    Vector3 cur_vel = fVel.interp(cur_pos);
+    Vector3 next_pos = cur_pos + cur_vel * dt; // Eulerian motion calculation
+    Vector3 next_pos_clipped =
+        fVel.clipped(next_pos); // Not related to velocity specifically
+
+    Vector3 next_vel = fVel.interp(next_pos);
+    Vector3 next_vel_clipped = fVel.interp(next_pos_clipped);
+    Vector3 average_vel = (cur_vel + next_vel) / 2.0;
+    // Like a little moving average of velocities
+    Vector3 better_next_pos = cur_pos + average_vel * dt;
+    Vector3 better_next_pos_clipped = fVel.clipped(better_next_pos);
+
+    particles[i].pos = better_next_pos_clipped;
+    particles[i].vel = average_vel;
+  }
+}

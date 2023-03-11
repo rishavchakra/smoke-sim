@@ -38,4 +38,5 @@ protected:
   void advect_density(float dt);
   void advect_temp(float dt);
   void advect_vel(float dt);
+  void advect_particles(float dt);
 };
