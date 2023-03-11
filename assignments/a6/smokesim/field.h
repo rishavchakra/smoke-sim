@@ -6,7 +6,7 @@ struct Field {
   Vector3i resolution;
   Vector3 size;
 
-  Field(Vector3i resolution);
+  Field(Vector3 size, Vector3i resolution);
   ~Field();
 
   float interp(Vector3 pos);
@@ -18,7 +18,7 @@ struct VectorField {
   Field y;
   Field z;
 
-  VectorField(Vector3i resolution);
+  VectorField(Vector3 size, Vector3i resolution);
 
   Vector3 interp(Vector3 pos);
   void set(Vector3i inds, Vector3 val);

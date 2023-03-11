@@ -2,11 +2,14 @@
 #include "field.h"
 #include "glad.h"
 #include "gtc/quaternion.hpp"
+#include "particle.h"
 #include <iostream>
 
-SmokeSimulation::SmokeSimulation(Vector3i size, Vector3i resolution)
-    : fDensity(Field(resolution)), fTemp(Field(resolution)),
-      fVel(VectorField(resolution)), size(size), resolution(resolution) {
+SmokeSimulation::SmokeSimulation(Vector3 size, Vector3i resolution,
+                                 int numParticles)
+    : fDensity(Field(size, resolution)), fTemp(Field(size, resolution)),
+      fVel(VectorField(size, resolution)), size(size), resolution(resolution),
+      particles(std::vector<Particle>(numParticles, Particle())) {
   glGenTransformFeedbacks(2, this->feedback);
 
   // Bind the first set of buffers
@@ -36,7 +39,7 @@ void SmokeSimulation::step(float dt) {
 
 void SmokeSimulation::advect_density(float dt) {
   // TODO: use an instance variable to reduce memory allocations
-  Field newDensity = Field(this->resolution);
+  Field newDensity = Field(this->size, this->resolution);
   Vector3 cellsize =
       Vector3(size.x() / resolution.x(), size.y() / resolution.y(),
               size.z() / resolution.z());
@@ -61,7 +64,7 @@ void SmokeSimulation::advect_density(float dt) {
 }
 
 void SmokeSimulation::advect_temp(float dt) {
-  Field newTemp = Field(this->resolution);
+  Field newTemp = Field(this->size, this->resolution);
   Vector3 cellsize =
       Vector3(size.x() / resolution.x(), size.y() / resolution.y(),
               size.z() / resolution.z());
@@ -86,11 +89,12 @@ void SmokeSimulation::advect_temp(float dt) {
 }
 
 void SmokeSimulation::advect_vel(float dt) {
-  VectorField newVel = VectorField(this->resolution);
+  VectorField newVel = VectorField(this->size, this->resolution);
   Vector3 cellsize =
       Vector3(size.x() / resolution.x(), size.y() / resolution.y(),
               size.z() / resolution.z());
 
+#pragma omp parallel for
   for (int x = 0; x < resolution.x(); x++) {
     for (int y = 0; y < resolution.y(); y++) {
       for (int z = 0; z < resolution.z(); z++) {
@@ -109,7 +113,7 @@ void SmokeSimulation::advect_vel(float dt) {
         Vector3 zFaceMid = zFaceCenter - fVel.interp(zFaceCenter);
 
         newVel.set(
-            Vector3(x, y, z),
+            Vector3i(x, y, z),
             Vector3(fVel.x.interp(xFaceCenter - fVel.interp(xFaceMid) * dt),
                     fVel.y.interp(xFaceCenter - fVel.interp(xFaceMid) * dt),
                     fVel.z.interp(xFaceCenter - fVel.interp(xFaceMid) * dt)));
