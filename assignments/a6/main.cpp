@@ -249,7 +249,7 @@ public:
 
 	int Add_Object_Wave() {
 		////add the plane mesh object
-		int obj_idx = Add_Obj_Mesh_Object("plane.obj");
+		int obj_idx = Add_Obj_Mesh_Object("wave.obj");
 		auto plane_obj = mesh_object_array[obj_idx];
 		plane_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("wave"));
 

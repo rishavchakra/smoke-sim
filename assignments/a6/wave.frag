@@ -80,7 +80,7 @@ float noiseOctave(vec2 v, int num)
 float height(vec2 v){
     float h = 0;
 	// Your implementation starts here
-	h = 0.75 * noiseOctave(v, 10);
+	h = 0.75 * noiseOctave(v, 3);
 	if (h < 0) {
 		h = -0.5 * h;
 	}
@@ -102,14 +102,34 @@ vec3 compute_normal(vec2 v, float d)
 	// Your implementation ends here
 	return normal_vector;
 }
+
+float water(vec2 p) {
+    float ht = 0;
+    vec2 sh1 = 0.001 * vec2(iTime * 320.0, iTime * 240.0);
+    vec2 sh2 = 0.001 * vec2(iTime * 380.0, iTime * -260.0);
+
+    float wave = 0.0;
+    wave += sin(p.x * 0.022 + sh2.x) * 4.4;
+    wave += sin(p.x * 0.0170 + p.y * 0.010 + sh2.x * 1.120) * 4.0;
+    wave -= sin(p.x * 0.001 + p.y * 0.005 + sh2.x * 0.120) * 4.0;
+
+    wave += sin(p.x * 0.022 + p.y * 0.012 + sh2.x * 3.44) * 5.0;
+    wave += sin(p.x * 0.031 + p.y * 0.012 + sh2.x * 4.28) * 2.5 ;
+    wave *= 1.0;
+    wave -= noiseOctave(p * 0.005 - sh2 * 0.5, 6) * 1.0 * 25.;
+    
+    ht += wave;
+    return ht;
+}
+
 ///////////// Part 2c /////////////////////
 /* complete the get_color function by setting emissiveColor using some function of height/normal vector/noise */
 /* put your Phong/Lambertian lighting model here to synthesize the lighting effect onto the terrain*/
 vec3 get_color(vec2 v)
 {
-	float h = height(v);
+	float h = water(v);
 	vec3 vtx_normal = compute_normal(v, 0.01);
-	vec3 emissiveColor = mix(vec3(0., 0., 1.), vec3(0.2, 1., 1.), h);
+	vec3 emissiveColor = mix(vec3(0.0, 0.0, 0.88), vec3(0., 0., 0.9), h);
 	vec3 lightingColor= vec3(1.,1.,1.);
 	// Your implementation starts here
 	
@@ -128,9 +148,11 @@ vec3 get_color(vec2 v)
 	vec3 ambColor = ka;
 	lightingColor = kd * _localLight * max(0., dot(_lightDir, normal));
 	// Your implementation ends here
-    return emissiveColor*lightingColor;
+    // return emissiveColor*lightingColor;
+	return emissiveColor;
 }
 void main()
 {
 	frag_color = vec4(get_color(vtx_pos.xy),1.f);
+	// frag_color = vec4(0.0, 0.0, 1.0, 1.f);
 }

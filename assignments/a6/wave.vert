@@ -12,6 +12,18 @@ layout (std140) uniform camera
     vec4 position;
 };
 
+/*uniform variables*/
+uniform float iTime; ////time
+
+/*input variables*/
+layout (location=0) in vec4 pos;
+layout (location=2) in vec4 normal;
+layout (location=3) in vec4 uv;
+layout (location=4) in vec4 tangent;
+
+/*output variables*/
+out vec3 vtx_pos; ////vertex position in the world space
+
 ///////////// Part 1a /////////////////////
 /* Create a function that takes in an xy coordinate and returns a 'random' 2d vector. (There is no right answer)
    Feel free to find a hash function online. Use the commented function to check your result */
@@ -89,7 +101,7 @@ float WIDTH = 10;
 float height(vec2 v){
     float h = 0;
     // Your implementation starts here
-    h = pow(0.75, noiseOctave(v, 10));
+    h = pow(0.75, noiseOctave(v, 3));
     if (h < 0) {
         h = -0.5 * h;
     }
@@ -98,20 +110,27 @@ float height(vec2 v){
     return h;
 }
 
-/*uniform variables*/
-uniform float iTime; ////time
+float water(vec2 p) {
+    float ht = 0;
+    vec2 sh1 = 0.001 * vec2(iTime * 320.0, iTime * 240.0);
+    vec2 sh2 = 0.001 * vec2(iTime * 380.0, iTime * -260.0);
 
-/*input variables*/
-layout (location=0) in vec4 pos;
-layout (location=2) in vec4 normal;
-layout (location=3) in vec4 uv;
-layout (location=4) in vec4 tangent;
+    float wave = 0.0;
+    wave += sin(p.x * 0.022 + sh2.x) * 4.4;
+    wave += sin(p.x * 0.0170 + p.y * 0.010 + sh2.x * 1.120) * 4.0;
+    wave -= sin(p.x * 0.001 + p.y * 0.005 + sh2.x * 0.120) * 4.0;
 
-/*output variables*/
-out vec3 vtx_pos; ////vertex position in the world space
+    wave += sin(p.x * 0.022 + p.y * 0.012 + sh2.x * 3.44) * 5.0;
+    wave += sin(p.x * 0.031 + p.y * 0.012 + sh2.x * 4.28) * 2.5 ;
+    wave *= 1.0;
+    wave -= noiseOctave(p * 0.005 - sh2 * 0.5, 6) * 1.0 * 25.;
+    
+    ht += wave;
+    return ht;
+}
 
 void main()
 {
-    vtx_pos = (vec4(pos.xy, height(pos.xy), 1)).xyz;
+    vtx_pos = (vec4(pos.x - 10000, pos.y - 10000, water(pos.xy), 1)).xyz;
     gl_Position = pvm * vec4(vtx_pos,1);
 }
