@@ -12,6 +12,18 @@ layout (std140) uniform camera
     vec4 position;
 };
 
+/*uniform variables*/
+uniform float iTime; ////time
+
+/*input variables*/
+layout (location=0) in vec4 pos;
+layout (location=2) in vec4 normal;
+layout (location=3) in vec4 uv;
+layout (location=4) in vec4 tangent;
+
+/*output variables*/
+out vec3 vtx_pos; ////vertex position in the world space
+
 ///////////// Part 1a /////////////////////
 /* Create a function that takes in an xy coordinate and returns a 'random' 2d vector. (There is no right answer)
    Feel free to find a hash function online. Use the commented function to check your result */
@@ -22,7 +34,7 @@ vec2 hash2(vec2 v)
     // Your implementation starts here
     // From Book of Shaders
     float n = fract(sin(dot(v.xy, vec2(12.9898,78.233))) * 43758.5453123);
-    rand = vec2(cos(n * 2.0 * 3.14159265), sin(n * 2.0 * 3.14159265)); // Return as angle
+    rand = vec2(cos(n * 2.0 * 3.14159265 - iTime), sin(n * 2.0 * 3.14159265 + iTime)); // Return as angle
     // Your implementation ends here
 
     // rand  = 50.0 * 1.05 * fract(v * 0.3183099 + vec2(0.71, 0.113)); // Sample provided hash
@@ -89,7 +101,7 @@ float WIDTH = 10;
 float height(vec2 v){
     float h = 0;
     // Your implementation starts here
-    h = pow(0.75, noiseOctave(v, 10));
+    h = pow(0.75, noiseOctave(v, 3));
     if (h < 0) {
         h = -0.5 * h;
     }
@@ -97,18 +109,6 @@ float height(vec2 v){
     // Your implementation ends here
     return h;
 }
-
-/*uniform variables*/
-uniform float iTime; ////time
-
-/*input variables*/
-layout (location=0) in vec4 pos;
-layout (location=2) in vec4 normal;
-layout (location=3) in vec4 uv;
-layout (location=4) in vec4 tangent;
-
-/*output variables*/
-out vec3 vtx_pos; ////vertex position in the world space
 
 void main()
 {

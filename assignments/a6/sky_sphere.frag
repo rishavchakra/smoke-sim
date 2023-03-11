@@ -16,7 +16,6 @@ layout (std140) uniform camera
 /*uniform variables*/
 uniform float iTime;					////time
 uniform sampler2D tex_albedo;			////texture color
-uniform sampler2D tex_normal;			////texture normal
 
 /*input variables*/
 in vec3 vtx_pos;

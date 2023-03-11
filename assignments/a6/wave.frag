@@ -80,7 +80,7 @@ float noiseOctave(vec2 v, int num)
 float height(vec2 v){
     float h = 0;
 	// Your implementation starts here
-	h = 0.75 * noiseOctave(v, 10);
+	h = 0.75 * noiseOctave(v, 3);
 	if (h < 0) {
 		h = -0.5 * h;
 	}
@@ -133,4 +133,5 @@ vec3 get_color(vec2 v)
 void main()
 {
 	frag_color = vec4(get_color(vtx_pos.xy),1.f);
+	// frag_color = vec4(0.0, 0.0, 1.0, 1.f);
 }
