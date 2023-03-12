@@ -70,6 +70,7 @@ public:
 
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("wave.vert","wave.frag","wave");
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("volcano.vert","volcano.frag","volcano");
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("volcano2.vert","volcano2.frag","volcano2");
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("plane_body.vert","plane_body.frag","plane_body");
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("plane_wing.vert","plane_wing.frag","plane_wing");
 	}
@@ -296,6 +297,37 @@ public:
 		// mesh_object_array.push_back(volcano_obj);
 		// return (int)mesh_object_array.size()-1;
 	}
+	
+	int Add_Second_Volcano() {
+		////add the plane mesh object
+		int obj_idx = Add_Obj_Mesh_Object("volcano.obj");
+		auto volcano_obj = mesh_object_array[obj_idx];
+
+		////This is an example showing how to access and modify the values of vertices on the CPU end.
+		std::vector<Vector3>& vertices=volcano_obj->mesh.Vertices();
+		int vn=(int)vertices.size();
+		for(int i=0;i<vn;i++){
+			float x = vertices[i][0];
+			float y = vertices[i][1];
+			float z = vertices[i][2];
+
+			float newX = z;
+			float newY = y;
+			float newZ = -x;
+			vertices[i] = Vector3(newX, newY, newZ);
+		}
+
+		volcano_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("volcano2"));
+
+		volcano_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("volcano_albedo"));
+		volcano_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("volcano_normal"));
+		Set_Polygon_Mode(volcano_obj, PolygonMode::Fill);
+		Set_Shading_Mode(volcano_obj, ShadingMode::Texture);
+		volcano_obj->Set_Data_Refreshed();
+		volcano_obj->Initialize();
+		// mesh_object_array.push_back(volcano_obj);
+		// return (int)mesh_object_array.size()-1;
+	}
 
 	//// Use this function to set up lighting only if you are using Shadow mode
 	void Init_Lighting() {
@@ -331,6 +363,7 @@ public:
 		Plane_Wings_Object();
 		Add_Sky_Sphere();
 		Add_Volcano();
+		// Add_Second_Volcano();
 
 		// Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}

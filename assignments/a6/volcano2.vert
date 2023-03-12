@@ -40,7 +40,7 @@ void main()
 {
 	/*camera-transformed position. do not modify.*/
 	//// TODO: set your out variables
-	gl_Position=pvm*vec4(pos.x - 3000, pos.y - 2000, pos.z - 2000, 1.f);
+	gl_Position=pvm*vec4(pos.x - 2000, pos.y + 2600, pos.z - 3000, 1.f);
 	vtx_color=vec4(v_color.rgb,1.f);
 	nml=normal.xyz;
 	vtx_pos = pos.xyz;

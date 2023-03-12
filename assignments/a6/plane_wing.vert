@@ -30,12 +30,12 @@ out vec2 vtx_uv;
 void main()												
 {
 	float angle = iTime * 2;
-	float speed = iTime * 2;
+	float speed = iTime * 50;
 	mat4 rotation = mat4(
 		vec4( cos(angle), -sin(angle), 0.0,  0.0 ),
 		vec4( sin(angle), cos(angle),  0.0,  0.0 ),
 		vec4( 0.0,        0.0,         1.0,  0.0 ),
 		vec4( 0.0,        0.0,         0.0,  1.0 )); 
-    gl_Position=pvm*rotation*model*vec4(pos.x - speed, pos.y - speed, pos.z, 1.f);
+    gl_Position=pvm*model*vec4(pos.x, pos.y - 10000 + speed, pos.z + 1000, 1.f);
     vtx_uv = uv.xy;
 }
