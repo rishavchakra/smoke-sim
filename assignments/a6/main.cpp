@@ -69,6 +69,9 @@ public:
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_3.vert","object_3.frag","object_3");
 
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("wave.vert","wave.frag","wave");
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("volcano.vert","volcano.frag","volcano");
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("plane_body.vert","plane_body.frag","plane_body");
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("plane_wing.vert","plane_wing.frag","plane_wing");
 	}
 
 	void Add_Textures()
@@ -84,6 +87,8 @@ public:
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_3_normal");
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("sky_sphere_albedo.png", "sky_sphere_albedo");
 		// OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "sky_sphere_normal");
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("volcano_albedo.png", "volcano_albedo");
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("volcano_normal.png", "volcano_normal");
 	}
 
 	void Add_Background()
@@ -121,7 +126,7 @@ public:
 
 		////set up shader
 		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("plane_body"));
 		
 		////set up texture
 		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("plane_body_albedo"));
@@ -163,7 +168,7 @@ public:
 
 		////set up shader
 		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("plane_wing"));
 		
 		////set up texture
 		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("plane_wings_albedo"));
@@ -257,30 +262,39 @@ public:
 		Set_Shading_Mode(plane_obj, ShadingMode::Texture);
 		plane_obj->Set_Data_Refreshed();
 		plane_obj->Initialize();
+		mesh_object_array.push_back(plane_obj);
+		return (int)mesh_object_array.size()-1;
 	}
 
-	int Add_Object_Skysphere() {
-		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+	int Add_Volcano() {
+		////add the plane mesh object
+		int obj_idx = Add_Obj_Mesh_Object("volcano.obj");
+		auto volcano_obj = mesh_object_array[obj_idx];
 
-		real radius=100.;
-		Initialize_Sphere_Mesh(radius,&mesh_obj->mesh,3);		////add a sphere with radius=1. if the obj file name is not specified
-		
-		////set up shader
-		// mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("sky_sphere_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("sky_sphere"));
-		
-		////set up texture
-		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("sky_sphere_albedo"));
-		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("sky_sphere_normal"));
-		
-		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
-		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: Set Shading Mode to Shadow
-		
-		////initialize
-		mesh_obj->Set_Data_Refreshed();
-		mesh_obj->Initialize();	
-		mesh_object_array.push_back(mesh_obj);
-		return (int)mesh_object_array.size()-1;
+		////This is an example showing how to access and modify the values of vertices on the CPU end.
+		std::vector<Vector3>& vertices=volcano_obj->mesh.Vertices();
+		int vn=(int)vertices.size();
+		for(int i=0;i<vn;i++){
+			float x = vertices[i][0];
+			float y = vertices[i][1];
+			float z = vertices[i][2];
+
+			float newX = z;
+			float newY = y;
+			float newZ = -x;
+			vertices[i] = Vector3(newX, newY, newZ);
+		}
+
+		volcano_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("volcano"));
+
+		volcano_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("volcano_albedo"));
+		volcano_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("volcano_normal"));
+		Set_Polygon_Mode(volcano_obj, PolygonMode::Fill);
+		Set_Shading_Mode(volcano_obj, ShadingMode::Texture);
+		volcano_obj->Set_Data_Refreshed();
+		volcano_obj->Initialize();
+		// mesh_object_array.push_back(volcano_obj);
+		// return (int)mesh_object_array.size()-1;
 	}
 
 	//// Use this function to set up lighting only if you are using Shadow mode
@@ -316,6 +330,7 @@ public:
 		Plane_Object();
 		Plane_Wings_Object();
 		Add_Sky_Sphere();
+		Add_Volcano();
 
 		// Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}
