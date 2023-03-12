@@ -4,6 +4,9 @@
 
   ParticleRenderer::ParticleRenderer(SmokeSimulation &smoke_sim, int num_particles)
       : num_particles(num_particles), smoke_sim(smoke_sim) {
+    const GLfloat billboard_vert_buf_data[12] = {
+      -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f,
+      -0.5f, 0.5f,  0.0f, 0.5f, 0.5f,  0.0f};
     glGenBuffers(1, &billboard_vert_buf);
     glBindBuffer(GL_ARRAY_BUFFER, billboard_vert_buf);
     glBufferData(GL_ARRAY_BUFFER, sizeof(billboard_vert_buf_data),
