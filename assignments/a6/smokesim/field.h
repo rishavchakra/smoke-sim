@@ -21,5 +21,6 @@ struct VectorField {
   VectorField(Vector3 size, Vector3i resolution);
 
   Vector3 interp(Vector3 pos);
+  Vector3 clipped(Vector3 pos);
   void set(Vector3i inds, Vector3 val);
 };
