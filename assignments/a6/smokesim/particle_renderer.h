@@ -67,4 +67,10 @@ class ParticleRenderer {
     // Actually draw the particles
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, num_particles);
   }
+
+  void step() {
+    update_buffers();
+    bind_buffers();
+    draw();
+  }
 };
