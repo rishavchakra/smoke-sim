@@ -452,6 +452,10 @@ public:
           particlePos[i] + Vector3(-1, 1, 1),
           particlePos[i] + Vector3(1, -1, 1),
           particlePos[i] + Vector3(1, 1, 1)};
+          particlePos[i] + Vector3(0, -20, -20),
+          particlePos[i] + Vector3(0, -20, 20),
+          particlePos[i] + Vector3(0, 20, -20),
+          particlePos[i] + Vector3(0, 20, 20)};
       std::vector<Vector3> &vertices = mesh_obj->mesh.Vertices();
       vertices = triangle_vertices;
       mesh_obj->Set_Data_Refreshed();
@@ -497,6 +501,9 @@ public:
   }
 
   virtual void Initialize_Data() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
     Add_Shaders();
     Add_Textures();
 

@@ -19,12 +19,12 @@ SmokeSimulation::SmokeSimulation(Vector3 size, Vector3i resolution,
       pVelArray(std::vector<float>(numParticles * 4, 0.)),
       pColArray(std::vector<float>(numParticles * 4, 0.)), swap(true) {
   for (int i = 0; i < numParticles; i++) {
-    particlePos[i] = Vector3(((float)rand()) / RAND_MAX - 0.5,
-                             ((float)rand()) / RAND_MAX - 0.5,
+    particlePos[i] = Vector3(((float)rand()) / RAND_MAX - 2400.,
+                             ((float)rand()) / RAND_MAX - 1800,
                              ((float)rand()) / RAND_MAX * 4);
     particleVel[i] = Vector3((((float)rand()) / RAND_MAX - 0.5) * 3,
                              (((float)rand()) / RAND_MAX - 0.5) * 3,
-                             (((float)rand()) / RAND_MAX * 3) - 6.5);
+                             (((float)rand()) / RAND_MAX * 5) - 20);
     for (int x = 0; x < resolution.x() - 1; x++) {
       for (int y = 0; y < resolution.y() - 1; y++) {
         for (int z = 0; z < resolution.z() - 1; z++) {
