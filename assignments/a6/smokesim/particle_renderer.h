@@ -24,6 +24,11 @@ class ParticleRenderer {
   GLuint particle_positions_buf;
   GLuint particle_color_buf;
 
+  const char *VS;
+  const char *FS;
+
+  GLuint shader_program_id;
+
 public:
   SmokeSimulation &smoke_sim;
   ParticleRenderer(SmokeSimulation &smoke_sim, int num_particles);
@@ -34,4 +39,8 @@ public:
 protected:
   void bind_buffers();
   void unbind_buffers();
+
+  void load_shaders(const char *vertPath, const char *fragPath);
+  void compile_shaders();
+  void use_shaders();
 };
