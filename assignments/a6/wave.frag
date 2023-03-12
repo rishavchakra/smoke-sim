@@ -14,6 +14,74 @@ uniform float iTime;					////time
 in vec3 vtx_pos;
 /*input variables*/
 out vec4 frag_color;
+
+// struct ray {
+//     vec3 o;
+//     vec3 d;
+// };
+
+// struct light {
+//    vec3 position;		////point light position
+//    vec3 color;			////point light color
+// };
+
+// struct hit {
+//     float t;			////parameter in the ray function
+//     vec3 p;				////intersection point
+//     vec3 normal;		////normal on the intersection point
+//     vec3 color;			////color of the intersecting object
+// };
+
+// const float minT = 0.001;
+// const float maxT = 1e8;
+// const int numberOfSampling = 50;
+// ////if no hit is detected, return dummyHit
+// const hit dummyHit = hit(-1.0, vec3(0), vec3(0), vec3(0));
+// ////calculate the ray for a given uv coordinate
+// ray getRay(camera c, vec2 uv)
+// {
+//     return ray(c.origin, c.LowerLeftCorner + uv.x * c.horizontal + uv.y * c.vertical - c.origin);
+// }
+
+// hit hitPlane(ray r, vec3 p, vec3 n) {
+// 	hit h;
+// 	float t = -1 * (dot(r.o - p), n) / (dot(r.d, n));
+// 	if (t > 0) {
+// 		h.t = t;
+// 	}
+// 	else {
+// 		h.t = dummyHit.t;
+// 	}
+
+// 	h.p = r.o + h.t * r.d;
+// 	h.normal = n;
+// 	return h;
+// }
+
+// vec3 hitColor(ray r, vec3 p, vec3 n, light l) {
+// 	float K_A = 0.25;
+// 	float K_D = 1;
+	
+// 	vec3 L_sum = vec3(0);
+// 	hit h = hitPlane(r, p, n);
+// 	if (h.t > 0) {
+// 		vec3 I_a = h.color;
+// 		vec3 I_d = h.color;
+
+// 		ray shadowRay = ray(h.p, (l.position - h.p));
+// 		hit shadowHit = hitPlane(shadowRay, p, n);
+// 		if (shadowHit.t < 0) {
+// 			vec3 l_j = normalize(l.position - h.p);
+// 			float l_dot_n = dot(l_j, n);
+// 			float diff = max(0, l_dot_n);
+// 			L_sum = L_sum + K_D * I_d * diff;
+// 		}
+// 		L_sum = L_sum + K_A * I_A
+// 	}
+
+// 	return L_sum;
+// }
+
 ///////////// Part 1a /////////////////////
 /* Create a function that takes in an xy coordinate and returns a 'random' 2d vector. (There is no right answer)
    Feel free to find a hash function online. Use the commented function to check your result */
