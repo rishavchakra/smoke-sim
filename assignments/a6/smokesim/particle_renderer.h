@@ -17,6 +17,7 @@ class ParticleRenderer {
     ParticleRenderer(SmokeSimulation &smoke_sim, int num_particles);
     void draw(); 
     void update_buffers();
+    void step();
 
       // : num_particles(num_particles), smoke_sim(smoke_sim) {
   //   glGenBuffers(1, &billboard_vert_buf);
@@ -66,11 +67,6 @@ class ParticleRenderer {
   //   );
   // }
 
-  // void draw() {
-  //   glVertexAttribDivisor(0, 0); // Vertices buffer: shared so 0 per quad
-  //   glVertexAttribDivisor(1, 1); // Positions buffer: one per quad
+    // Actually draw the particles
 
-  //   // Actually draw the particles
-  //   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, num_particles);
-  // }
 };

@@ -351,8 +351,7 @@ public:
 		}
 		for(auto renderer: particle_renderer_array){
 			renderer.smoke_sim.step(1.); 
-			renderer.update_buffers();
-			renderer.draw();
+			renderer.step();
 		}
 		// These functions are specific to glDrawArrays*Instanced*.
 		// The first parameter is the attribute buffer we're talking about.
