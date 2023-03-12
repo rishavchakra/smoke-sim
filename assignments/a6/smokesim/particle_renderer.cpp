@@ -112,7 +112,10 @@ void ParticleRenderer::step() {
 //////// Particle Rendering with Bo Zhu's code
 
 ParticleRender::ParticleRender(SmokeSimulation &smoke_sim, int num_particles)
-    : smoke_sim(smoke_sim), num_particles(num_particles) {}
+    : smoke_sim(smoke_sim), num_particles(num_particles),
+      points(OpenGLPoints()) {
+  points.Initialize();
+}
 
 void ParticleRender::draw() { points.Display(); }
 
