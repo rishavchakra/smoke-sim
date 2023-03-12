@@ -111,7 +111,7 @@ float height(vec2 v){
 }
 
 float water(vec2 p) {
-    float ht = 0;
+    float h = 0;
     vec2 sh1 = 0.001 * vec2(iTime * 320.0, iTime * 240.0);
     vec2 sh2 = 0.001 * vec2(iTime * 380.0, iTime * -260.0);
 
@@ -125,8 +125,8 @@ float water(vec2 p) {
     wave *= 1.0;
     wave -= noiseOctave(p * 0.005 - sh2 * 0.5, 6) * 1.0 * 25.;
     
-    ht += wave;
-    return ht;
+    h += wave;
+    return h;
 }
 
 void main()
