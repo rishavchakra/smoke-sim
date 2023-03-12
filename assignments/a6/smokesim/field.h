@@ -10,6 +10,7 @@ struct Field {
   ~Field();
 
   float interp(Vector3 pos);
+  Vector3 clipped(Vector3 pos);
   void set(Vector3i inds, float val);
 };
 

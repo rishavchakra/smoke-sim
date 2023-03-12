@@ -51,6 +51,8 @@ float Field::interp(Vector3 pos) {
       rem.x());
 }
 
+Vector3 Field::clipped(Vector3 pos) { return pos; }
+
 void Field::set(Vector3i inds, float val) {
   this->data[inds.x()][inds.y()][inds.z()] = val;
 }
@@ -68,3 +70,5 @@ void VectorField::set(Vector3i inds, Vector3 val) {
   this->y.set(inds, val.y());
   this->z.set(inds, val.z());
 }
+
+Vector3 VectorField::clipped(Vector3 pos) { return pos; }
