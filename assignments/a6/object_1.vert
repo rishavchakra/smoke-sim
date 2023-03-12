@@ -24,8 +24,10 @@ layout (location=4) in vec4 tangent;	/*vertex tangent*/
 uniform mat4 model;						////model matrix
 
 /*output variables*/
+out vec2 vtx_uv;
 
 void main()												
 {
 	gl_Position=pvm*model*vec4(pos.xyz,1.f);
+	vtx_uv = uv.xy;
 }	

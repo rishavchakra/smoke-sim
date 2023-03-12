@@ -21,5 +21,7 @@ out vec4 frag_color;
 
 void main()							
 {		
-	frag_color = vec4(1.f,0.f,0.f,1.f);
+	vec2 uv = vtx_uv.xy;
+	vec4 texture_color = texture(tex_albedo, uv);
+	frag_color = vec4(texture_color.rgb,1.f);
 }	
