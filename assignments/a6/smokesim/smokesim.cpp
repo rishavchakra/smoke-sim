@@ -17,6 +17,15 @@ SmokeSimulation::SmokeSimulation(Vector3 size, Vector3i resolution,
       pPosArray(std::vector<float>(numParticles * 4, 0.)),
       pVelArray(std::vector<float>(numParticles * 4, 0.)),
       pColArray(std::vector<float>(numParticles * 4, 0.)) {
+          for (int i = 0; i < numParticles; i++) {
+    particlePos[i] = Vector3(((float)rand()) / RAND_MAX * size.x(),
+                             ((float)rand()) / RAND_MAX * size.y(),
+                             ((float)rand()) / RAND_MAX * size.z());
+    particleVel[i] = Vector3(((float)rand()) / RAND_MAX - 0.5,
+                             ((float)rand()) / RAND_MAX - 0.5,
+                             ((float)rand()) / RAND_MAX - 0.5);
+  }
+  // glGe
   // glGenTransformFeedbacks(2, this->feedback);
 
   // Bind the first set of buffers
@@ -35,6 +44,7 @@ SmokeSimulation::SmokeSimulation(Vector3 size, Vector3i resolution,
 SmokeSimulation::~SmokeSimulation() {}
 
 void SmokeSimulation::step(float dt) {
+
   this->advect_vel(dt);
   // add external velocities
   // project(?)
@@ -96,6 +106,7 @@ void SmokeSimulation::advect_temp(float dt) {
   Field *temp = &fTemp;
   fTemp = newFTemp;
   newFTemp = *temp;
+
 }
 
 void SmokeSimulation::advect_vel(float dt) {
@@ -135,26 +146,32 @@ void SmokeSimulation::advect_vel(float dt) {
   VectorField *temp = &fVel;
   fVel = newFVel;
   newFVel = *temp;
+
 }
 
 // Advect the particles themselves based on the fields
 void SmokeSimulation::advect_particles(float dt) {
   // #pragma omp parallel for
-  for (int i = 0; i < num_particles; i++) {
+              // std::cout << particlePos.size() << std::endl;
+
+  for (int i = 0; i < particlePos.size(); i++) {
+
     Vector3 cur_pos = particlePos[i];
-    Vector3 cur_vel = fVel.interp(cur_pos);
-    Vector3 next_pos = cur_pos + cur_vel * dt; // Eulerian motion calculation
-    Vector3 next_pos_clipped =
-        fVel.clipped(next_pos); // Not related to velocity specifically
+    // Vector3 cur_vel = fVel.interp(cur_pos);
+    // Vector3 next_pos = cur_pos + cur_vel * dt; // Eulerian motion calculation
+    // Vector3 next_pos_clipped =
+    //     fVel.clipped(next_pos); // Not related to velocity specifically
 
-    Vector3 next_vel = fVel.interp(next_pos);
-    Vector3 next_vel_clipped = fVel.interp(next_pos_clipped);
-    Vector3 average_vel = (cur_vel + next_vel) / 2.0;
-    // Like a little moving average of velocities
-    Vector3 better_next_pos = cur_pos + average_vel * dt;
-    Vector3 better_next_pos_clipped = fVel.clipped(better_next_pos);
+    // Vector3 next_vel = fVel.interp(next_pos);
+    // Vector3 next_vel_clipped = fVel.interp(next_pos_clipped);
+    // Vector3 average_vel = (cur_vel + next_vel) / 2.0;
+    // // Like a little moving average of velocities
+    // Vector3 better_next_pos = cur_pos + average_vel * dt;
+    // Vector3 better_next_pos_clipped = fVel.clipped(better_next_pos);
 
-    particlePos[i] = better_next_pos_clipped;
-    particleVel[i] = average_vel;
+    particlePos[i] = cur_pos + Vector3(0., 0., 1.);
+
+    particleVel[i] = Vector3();
   }
+
 }

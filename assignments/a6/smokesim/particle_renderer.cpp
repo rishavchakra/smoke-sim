@@ -31,8 +31,8 @@ ParticleRenderer::ParticleRenderer(SmokeSimulation &smoke_sim,
                GL_STREAM_DRAW);
 
   // load_shaders("smokesim/particle.vert", "smokesim/particle.frag");
-  load_shaders("object_1.vert", "object_1.frag");
-  compile_shaders();
+//   load_shaders("object_1.vert", "object_1.frag");
+//   compile_shaders();
 }
 
 void ParticleRenderer::update_buffers() {
@@ -101,7 +101,7 @@ void ParticleRenderer::draw() {
   // glUseProgram(OpenGLShaderLibrary::Get_Shader("particle"));
 
   // Actually draw the particles
-  use_shaders();
+//   use_shaders();
   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, num_particles);
 }
 

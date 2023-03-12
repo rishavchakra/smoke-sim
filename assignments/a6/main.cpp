@@ -435,13 +435,8 @@ int CreateSmokeParticles(std::vector<Vector3> particlePos)
 	}
 
   void Add_Particle_Renderer() {
-    SmokeSimulation simulation =
-        SmokeSimulation(Vector3(10., 10., 10.), Vector3i(10, 10, 10), 100);
-    // SmokeSimulation &ref = simulation;
-    // ParticleRenderer particle_renderer = ParticleRenderer(ref, 100);
-    particle_renderer_array.push_back(&simulation);
     smoke_sim =
-        new SmokeSimulation(Vector3(10., 10., 10.), Vector3i(10, 10, 10), 100);
+        new SmokeSimulation(Vector3(10., 10., 10.), Vector3i(10, 10, 10), 1000);
 	CreateSmokeParticles(smoke_sim->particlePos);
     SmokeSimulation &ref = *smoke_sim;
     particle_renderer = new ParticleRenderer(ref, 100);
@@ -497,17 +492,13 @@ int CreateSmokeParticles(std::vector<Vector3> particlePos)
     for (auto &mesh_obj : mesh_object_array) {
       mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
     }
-	for (auto &mesh_obj : smoke_particle_array) {
-      mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
-    }
-    for (auto renderer : particle_renderer_array) {
-      // renderer->smoke_sim.step(1.);
-      // renderer->step(1.);
-      smoke_sim->step(1.);
-	  UpdateSmokeParticles(smoke_sim->particlePos);
+	// for (auto &mesh_obj : smoke_particle_array) {
+    //   mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
+    // }
+	smoke_sim->step(1.);
+	UpdateSmokeParticles(smoke_sim->particlePos);
 
-      particle_renderer->step();
-    }
+    particle_renderer->step();
     // These functions are specific to glDrawArrays*Instanced*.
     // The first parameter is the attribute buffer we're talking about.
     // The second parameter is the "rate at which generic vertex attributes
