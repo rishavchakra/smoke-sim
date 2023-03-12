@@ -29,7 +29,13 @@ out vec2 vtx_uv;
 
 void main()												
 {
-	float theta = iTime * 2;
-	gl_Position=pvm*model*vec4(pos.x + 100*cos(theta), pos.y + 100*sin(theta), pos.z, 1.f);
+	float angle = iTime * 2;
+	float speed = iTime * 2;
+	mat4 rotation = mat4(
+		vec4( cos(angle), -sin(angle), 0.0,  0.0 ),
+		vec4( sin(angle), cos(angle),  0.0,  0.0 ),
+		vec4( 0.0,        0.0,         1.0,  0.0 ),
+		vec4( 0.0,        0.0,         0.0,  1.0 )); 
+    gl_Position=pvm*rotation*model*vec4(pos.x - speed, pos.y - speed, pos.z, 1.f);
     vtx_uv = uv.xy;
 }
