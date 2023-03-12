@@ -29,6 +29,8 @@ struct SmokeSimulation {
   Field newFTemp;
   VectorField newFVel;
 
+  bool swap;
+
   std::vector<Vector3> particlePos;
   std::vector<Vector3> particleVel;
   std::vector<Vector3> particleColor;
