@@ -18,6 +18,7 @@ struct SmokeSimulation {
   // The number of grid cells for physics fields
   Vector3 size;
   Vector3i resolution;
+  int num_particles;
 
   // 3d grids for each field
   Field fDensity;
@@ -30,9 +31,13 @@ struct SmokeSimulation {
 
   std::vector<Vector3> particlePos;
   std::vector<Vector3> particleVel;
+  std::vector<Vector3> particleColor;
+  std::vector<float> pPosArray;
+  std::vector<float> pVelArray;
+  std::vector<float> pColArray;
 
   // Constructor
-  SmokeSimulation(Vector3 size, Vector3i resolution, int numParticles);
+  SmokeSimulation(Vector3 size, Vector3i resolution, int num_particles);
   // Destructor
   ~SmokeSimulation();
   // Step forward in the physics simulation by a timestep dt

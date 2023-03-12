@@ -10,9 +10,13 @@ SmokeSimulation::SmokeSimulation(Vector3 size, Vector3i resolution,
     : fDensity(Field(size, resolution)), fTemp(Field(size, resolution)),
       fVel(VectorField(size, resolution)), newFDensity(Field(size, resolution)),
       newFTemp(Field(size, resolution)), newFVel(VectorField(size, resolution)),
-      size(size), resolution(resolution),
+      size(size), resolution(resolution), num_particles(numParticles),
       particlePos(std::vector<Vector3>(numParticles, Vector3())),
-      particleVel(std::vector<Vector3>(numParticles, Vector3())) {
+      particleVel(std::vector<Vector3>(numParticles, Vector3())),
+      particleColor(std::vector<Vector3>(numParticles, Vector3())),
+      pPosArray(std::vector<float>(numParticles * 4, 0.)),
+      pVelArray(std::vector<float>(numParticles * 4, 0.)),
+      pColArray(std::vector<float>(numParticles * 4, 0.)) {
   // glGenTransformFeedbacks(2, this->feedback);
 
   // Bind the first set of buffers
@@ -136,7 +140,7 @@ void SmokeSimulation::advect_vel(float dt) {
 // Advect the particles themselves based on the fields
 void SmokeSimulation::advect_particles(float dt) {
   // #pragma omp parallel for
-  for (int i = 0; i < particlePos.size(); i++) {
+  for (int i = 0; i < num_particles; i++) {
     Vector3 cur_pos = particlePos[i];
     Vector3 cur_vel = fVel.interp(cur_pos);
     Vector3 next_pos = cur_pos + cur_vel * dt; // Eulerian motion calculation
