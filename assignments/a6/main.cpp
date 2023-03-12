@@ -80,29 +80,45 @@ public:
     OpenGLShaderLibrary::Instance()->Add_Shader_From_File(
         "object_3.vert", "object_3.frag", "object_3");
 
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("wave.vert","wave.frag","wave");
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("volcano.vert","volcano.frag","volcano");
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("volcano2.vert","volcano2.frag","volcano2");
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("plane_body.vert","plane_body.frag","plane_body");
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("plane_wing.vert","plane_wing.frag","plane_wing");
-	}
+    OpenGLShaderLibrary::Instance()->Add_Shader_From_File("wave.vert",
+                                                          "wave.frag", "wave");
+    OpenGLShaderLibrary::Instance()->Add_Shader_From_File(
+        "volcano.vert", "volcano.frag", "volcano");
+    OpenGLShaderLibrary::Instance()->Add_Shader_From_File(
+        "volcano2.vert", "volcano2.frag", "volcano2");
+    OpenGLShaderLibrary::Instance()->Add_Shader_From_File(
+        "plane_body.vert", "plane_body.frag", "plane_body");
+    OpenGLShaderLibrary::Instance()->Add_Shader_From_File(
+        "plane_wing.vert", "plane_wing.frag", "plane_wing");
+  }
 
-	void Add_Textures()
-	{
-		////format: image name, texture name
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_wings.jpg", "plane_wings_albedo");
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_wings.jpg", "plane_wings_normal");
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_body.jpg", "plane_body_albedo");	
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("airplane_body.jpg", "plane_body_normal");		
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_1_albedo");		
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_1_normal");	
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_3_albedo");		
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_3_normal");
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("sky_sphere_albedo.png", "sky_sphere_albedo");
-		// OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "sky_sphere_normal");
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("volcano_albedo.png", "volcano_albedo");
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("volcano_normal.png", "volcano_normal");
-	}
+  void Add_Textures() {
+    ////format: image name, texture name
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
+        "airplane_wings.jpg", "plane_wings_albedo");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
+        "airplane_wings.jpg", "plane_wings_normal");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
+        "airplane_body.jpg", "plane_body_albedo");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
+        "airplane_body.jpg", "plane_body_normal");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png",
+                                                            "object_1_albedo");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png",
+                                                            "object_1_normal");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png",
+                                                            "object_3_albedo");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png",
+                                                            "object_3_normal");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
+        "sky_sphere_albedo.png", "sky_sphere_albedo");
+    // OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png",
+    // "sky_sphere_normal");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
+        "volcano_albedo.png", "volcano_albedo");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
+        "volcano_normal.png", "volcano_normal");
+  }
 
   void Add_Background() {
     OpenGLBackground *opengl_background =
@@ -140,22 +156,27 @@ public:
         0.f, 1.f, 0.f,
         1.f); ////column 3	////set the translation in the last column
 
-		////set up shader
-		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("plane_body"));
-		
-		////set up texture
-		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("plane_body_albedo"));
-		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("plane_body_normal"));
-		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
-		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: set Shading Mode to Shadow
-		
-		////initialize
-		mesh_obj->Set_Data_Refreshed();
-		mesh_obj->Initialize();	
-		mesh_object_array.push_back(mesh_obj);
-		return (int)mesh_object_array.size()-1;
-	}
+    ////set up shader
+    // mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow
+    // TODO: uncomment this line and comment next line to use shadow shader
+    mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("plane_body"));
+
+    ////set up texture
+    mesh_obj->Add_Texture(
+        "tex_albedo", OpenGLTextureLibrary::Get_Texture("plane_body_albedo"));
+    mesh_obj->Add_Texture(
+        "tex_normal", OpenGLTextureLibrary::Get_Texture("plane_body_normal"));
+    Set_Polygon_Mode(mesh_obj, PolygonMode::Fill);
+    Set_Shading_Mode(
+        mesh_obj,
+        ShadingMode::Texture); // SHADOW TODO: set Shading Mode to Shadow
+
+    ////initialize
+    mesh_obj->Set_Data_Refreshed();
+    mesh_obj->Initialize();
+    mesh_object_array.push_back(mesh_obj);
+    return (int)mesh_object_array.size() - 1;
+  }
 
   int Plane_Wings_Object() {
     auto mesh_obj = Add_Interactive_Object<OpenGLTriangleMesh>();
@@ -187,22 +208,27 @@ public:
         0.f, 1.f, 0.f,
         1.f); ////column 3	////set the translation in the last column
 
-		////set up shader
-		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("plane_wing"));
-		
-		////set up texture
-		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("plane_wings_albedo"));
-		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("plane_wings_normal"));
-		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
-		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: set Shading Mode to Shadow
-		
-		////initialize
-		mesh_obj->Set_Data_Refreshed();
-		mesh_obj->Initialize();	
-		mesh_object_array.push_back(mesh_obj);
-		return (int)mesh_object_array.size()-1;
-	}
+    ////set up shader
+    // mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow
+    // TODO: uncomment this line and comment next line to use shadow shader
+    mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("plane_wing"));
+
+    ////set up texture
+    mesh_obj->Add_Texture(
+        "tex_albedo", OpenGLTextureLibrary::Get_Texture("plane_wings_albedo"));
+    mesh_obj->Add_Texture(
+        "tex_normal", OpenGLTextureLibrary::Get_Texture("plane_wings_normal"));
+    Set_Polygon_Mode(mesh_obj, PolygonMode::Fill);
+    Set_Shading_Mode(
+        mesh_obj,
+        ShadingMode::Texture); // SHADOW TODO: set Shading Mode to Shadow
+
+    ////initialize
+    mesh_obj->Set_Data_Refreshed();
+    mesh_obj->Initialize();
+    mesh_object_array.push_back(mesh_obj);
+    return (int)mesh_object_array.size() - 1;
+  }
 
   int Add_Sky_Sphere() {
     auto mesh_obj = Add_Interactive_Object<OpenGLTriangleMesh>();
@@ -291,75 +317,82 @@ public:
     auto plane_obj = mesh_object_array[obj_idx];
     plane_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("wave"));
 
-		Set_Polygon_Mode(plane_obj, PolygonMode::Fill);
-		Set_Shading_Mode(plane_obj, ShadingMode::Texture);
-		plane_obj->Set_Data_Refreshed();
-		plane_obj->Initialize();
-		mesh_object_array.push_back(plane_obj);
-		return (int)mesh_object_array.size()-1;
-	}
+    Set_Polygon_Mode(plane_obj, PolygonMode::Fill);
+    Set_Shading_Mode(plane_obj, ShadingMode::Texture);
+    plane_obj->Set_Data_Refreshed();
+    plane_obj->Initialize();
+    mesh_object_array.push_back(plane_obj);
+    return (int)mesh_object_array.size() - 1;
+  }
 
-	int Add_Volcano() {
-		////add the plane mesh object
-		int obj_idx = Add_Obj_Mesh_Object("volcano.obj");
-		auto volcano_obj = mesh_object_array[obj_idx];
+  int Add_Volcano() {
+    ////add the plane mesh object
+    int obj_idx = Add_Obj_Mesh_Object("volcano.obj");
+    auto volcano_obj = mesh_object_array[obj_idx];
 
-		////This is an example showing how to access and modify the values of vertices on the CPU end.
-		std::vector<Vector3>& vertices=volcano_obj->mesh.Vertices();
-		int vn=(int)vertices.size();
-		for(int i=0;i<vn;i++){
-			float x = vertices[i][0];
-			float y = vertices[i][1];
-			float z = vertices[i][2];
+    ////This is an example showing how to access and modify the values of
+    /// vertices on the CPU end.
+    std::vector<Vector3> &vertices = volcano_obj->mesh.Vertices();
+    int vn = (int)vertices.size();
+    for (int i = 0; i < vn; i++) {
+      float x = vertices[i][0];
+      float y = vertices[i][1];
+      float z = vertices[i][2];
 
-			float newX = z;
-			float newY = y;
-			float newZ = -x;
-			vertices[i] = Vector3(newX, newY, newZ);
-		}
+      float newX = z;
+      float newY = y;
+      float newZ = -x;
+      vertices[i] = Vector3(newX, newY, newZ);
+    }
 
-		volcano_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("volcano"));
+    volcano_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("volcano"));
 
-		volcano_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("volcano_albedo"));
-		volcano_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("volcano_normal"));
-		Set_Polygon_Mode(volcano_obj, PolygonMode::Fill);
-		Set_Shading_Mode(volcano_obj, ShadingMode::Texture);
-		volcano_obj->Set_Data_Refreshed();
-		volcano_obj->Initialize();
-		// mesh_object_array.push_back(volcano_obj);
-		// return (int)mesh_object_array.size()-1;
-	}
-	
-	int Add_Second_Volcano() {
-		////add the plane mesh object
-		int obj_idx = Add_Obj_Mesh_Object("volcano.obj");
-		auto volcano_obj = mesh_object_array[obj_idx];
+    volcano_obj->Add_Texture(
+        "tex_albedo", OpenGLTextureLibrary::Get_Texture("volcano_albedo"));
+    volcano_obj->Add_Texture(
+        "tex_normal", OpenGLTextureLibrary::Get_Texture("volcano_normal"));
+    Set_Polygon_Mode(volcano_obj, PolygonMode::Fill);
+    Set_Shading_Mode(volcano_obj, ShadingMode::Texture);
+    volcano_obj->Set_Data_Refreshed();
+    volcano_obj->Initialize();
+    // mesh_object_array.push_back(volcano_obj);
+    // return (int)mesh_object_array.size()-1;
+  }
 
-		////This is an example showing how to access and modify the values of vertices on the CPU end.
-		std::vector<Vector3>& vertices=volcano_obj->mesh.Vertices();
-		int vn=(int)vertices.size();
-		for(int i=0;i<vn;i++){
-			float x = vertices[i][0];
-			float y = vertices[i][1];
-			float z = vertices[i][2];
+  int Add_Second_Volcano() {
+    ////add the plane mesh object
+    int obj_idx = Add_Obj_Mesh_Object("volcano.obj");
+    auto volcano_obj = mesh_object_array[obj_idx];
 
-			float newX = z;
-			float newY = y;
-			float newZ = -x;
-			vertices[i] = Vector3(newX, newY, newZ);
-		}
+    ////This is an example showing how to access and modify the values of
+    /// vertices on the CPU end.
+    std::vector<Vector3> &vertices = volcano_obj->mesh.Vertices();
+    int vn = (int)vertices.size();
+    for (int i = 0; i < vn; i++) {
+      float x = vertices[i][0];
+      float y = vertices[i][1];
+      float z = vertices[i][2];
 
-		volcano_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("volcano2"));
+      float newX = z;
+      float newY = y;
+      float newZ = -x;
+      vertices[i] = Vector3(newX, newY, newZ);
+    }
 
-		volcano_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("volcano_albedo"));
-		volcano_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("volcano_normal"));
-		Set_Polygon_Mode(volcano_obj, PolygonMode::Fill);
-		Set_Shading_Mode(volcano_obj, ShadingMode::Texture);
-		volcano_obj->Set_Data_Refreshed();
-		volcano_obj->Initialize();
-		// mesh_object_array.push_back(volcano_obj);
-		// return (int)mesh_object_array.size()-1;
-	}
+    volcano_obj->Add_Shader_Program(
+        OpenGLShaderLibrary::Get_Shader("volcano2"));
+
+    volcano_obj->Add_Texture(
+        "tex_albedo", OpenGLTextureLibrary::Get_Texture("volcano_albedo"));
+    volcano_obj->Add_Texture(
+        "tex_normal", OpenGLTextureLibrary::Get_Texture("volcano_normal"));
+    Set_Polygon_Mode(volcano_obj, PolygonMode::Fill);
+    Set_Shading_Mode(volcano_obj, ShadingMode::Texture);
+    volcano_obj->Set_Data_Refreshed();
+    volcano_obj->Initialize();
+    // mesh_object_array.push_back(volcano_obj);
+    // return (int)mesh_object_array.size()-1;
+  }
 
   int CreateSmokeParticles(std::vector<Vector3> particlePos) {
     for (int i = 0; i < particlePos.size(); i++) {
@@ -418,56 +451,14 @@ public:
     }
     return (int)smoke_particle_array.size() - 1;
   }
-  int UpdateSmokeParticles(std::vector<Vector3> particlePos) {
+  int UpdateSmokeParticles(std::vector<Vector3> &particlePos) {
     std::cout << smoke_particle_array.size() << std::endl;
     for (int i = 0; i < particlePos.size(); i++) {
 
       auto mesh_obj = smoke_particle_array[i];
-      auto &mesh = mesh_obj->mesh;
-
-      ////vertex position
-      std::vector<Vector3> triangle_vertices = {
-          particlePos[i] + Vector3(-1, -1, 1),
-          particlePos[i] + Vector3(-1, 1, 1),
-          particlePos[i] + Vector3(1, -1, 1),
-          particlePos[i] + Vector3(1, 1, 1)};
-      std::vector<Vector3> &vertices = mesh_obj->mesh.Vertices();
-      vertices = triangle_vertices;
-
-      ////vertex color
-      std::vector<Vector4f> &vtx_color = mesh_obj->vtx_color;
-      vtx_color = {Vector4f(1.f, 0.f, 0.f, 0.f), Vector4f(0.f, 1.f, 0.f, 0.f),
-                   Vector4f(0.f, 0.f, 1.f, 0.f), Vector4f(1.f, 1.f, 0.f, 0.f)};
-
-      ////vertex normal
-      std::vector<Vector3> &vtx_normal = mesh_obj->vtx_normal;
-      vtx_normal = {Vector3(0., 1., 0.), Vector3(0., 1., 0.),
-                    Vector3(0., 1., 0.), Vector3(0., 1., 0.)};
-
-      ////vertex uv
-      std::vector<Vector2> &uv = mesh_obj->mesh.Uvs();
-      uv = {Vector2(0., 0.), Vector2(1., 0.), Vector2(0., 1.), Vector2(1., 1.)};
-
-      ////mesh elements
-      std::vector<Vector3i> &elements = mesh_obj->mesh.Elements();
-      elements = {Vector3i(0, 1, 3), Vector3i(0, 3, 2)};
-
-      mesh_obj->model_matrix = glm::mat4(
-          1.f, 0.f, 0.f, 0.f, ////column 0
-          0.f, 1.f, 0.f, 0.f, ////column 1
-          0.f, 0.f, 1.f, 0.f, ////column 2
-          0.f, 1.f, 0.f,
-          1.f); ////column 3	////set the translation in the last column
-
-      ////set up shader
-      // mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3_shadow"));//Shadow
-      // TODO: uncomment this line and comment next line to use shadow shader
-
-      ////set up texture
 
       ////initialize
       mesh_obj->Set_Data_Refreshed();
-      mesh_obj->Initialize();
     }
     return (int)smoke_particle_array.size() - 1;
   }
@@ -477,7 +468,7 @@ public:
         new SmokeSimulation(Vector3(10., 10., 10.), Vector3i(10, 10, 10), 1000);
     CreateSmokeParticles(smoke_sim->particlePos);
     SmokeSimulation &ref = *smoke_sim;
-    particle_renderer = new ParticleRenderer(ref, 100);
+    // particle_renderer = new ParticleRenderer(ref, 100);
   }
 
   void Init_Lighting() {
@@ -513,13 +504,13 @@ public:
     Add_Shaders();
     Add_Textures();
 
-		Add_Background();
-		Add_Object_Wave();
-		Plane_Object();
-		Plane_Wings_Object();
-		Add_Sky_Sphere();
-		Add_Volcano();
-		// Add_Second_Volcano();
+    Add_Background();
+    Add_Object_Wave();
+    Plane_Object();
+    Plane_Wings_Object();
+    Add_Sky_Sphere();
+    Add_Volcano();
+    // Add_Second_Volcano();
 
     Add_Particle_Renderer();
 
@@ -537,7 +528,7 @@ public:
     smoke_sim->step(1.);
     UpdateSmokeParticles(smoke_sim->particlePos);
 
-    particle_renderer->step();
+    // particle_renderer->step();
     // These functions are specific to glDrawArrays*Instanced*.
     // The first parameter is the attribute buffer we're talking about.
     // The second parameter is the "rate at which generic vertex attributes
@@ -552,6 +543,7 @@ public:
 int main(int argc, char *argv[]) {
   FinalProjectDriver driver;
   driver.Initialize();
+  std::cout << "Here" << std::endl;
   driver.Run();
 }
 
