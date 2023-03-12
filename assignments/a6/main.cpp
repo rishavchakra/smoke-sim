@@ -82,6 +82,8 @@ public:
 
     OpenGLShaderLibrary::Instance()->Add_Shader_From_File("wave.vert",
                                                           "wave.frag", "wave");
+
+    OpenGLShaderLibrary::Instance()->Add_Shader_From_File("volcano.vert","volcano.frag","volcano");
   }
 
   void Add_Textures() {
@@ -110,6 +112,9 @@ public:
         "sky_sphere_albedo.png", "sky_sphere_albedo");
     // OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png",
     // "sky_sphere_normal");
+
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File("volcano_albedo.png", "volcano_albedo");
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("volcano_normal.png", "volcano_normal");
   }
 
   void Add_Background() {
@@ -315,6 +320,37 @@ public:
     plane_obj->Initialize();
   }
 
+  int Add_Volcano() {
+		////add the plane mesh object
+		int obj_idx = Add_Obj_Mesh_Object("volcano.obj");
+		auto volcano_obj = mesh_object_array[obj_idx];
+
+		////This is an example showing how to access and modify the values of vertices on the CPU end.
+		std::vector<Vector3>& vertices=volcano_obj->mesh.Vertices();
+		int vn=(int)vertices.size();
+		for(int i=0;i<vn;i++){
+			float x = vertices[i][0];
+			float y = vertices[i][1];
+			float z = vertices[i][2];
+
+			float newX = z;
+			float newY = y;
+			float newZ = x;
+			vertices[i] = Vector3(newX, newY, newZ);
+		}
+
+		volcano_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("volcano"));
+
+		volcano_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("volcano_albedo"));
+		volcano_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("volcano_normal"));
+		Set_Polygon_Mode(volcano_obj, PolygonMode::Fill);
+		Set_Shading_Mode(volcano_obj, ShadingMode::Texture);
+		volcano_obj->Set_Data_Refreshed();
+		volcano_obj->Initialize();
+		// mesh_object_array.push_back(volcano_obj);
+		// return (int)mesh_object_array.size()-1;
+	}
+
   int Add_Object_Skysphere() {
     auto mesh_obj = Add_Interactive_Object<OpenGLTriangleMesh>();
 
@@ -418,41 +454,7 @@ public:
           particlePos[i] + Vector3(1, 1, 1)};
       std::vector<Vector3> &vertices = mesh_obj->mesh.Vertices();
       vertices = triangle_vertices;
-
-      ////vertex color
-      std::vector<Vector4f> &vtx_color = mesh_obj->vtx_color;
-      vtx_color = {Vector4f(1.f, 0.f, 0.f, 0.f), Vector4f(0.f, 1.f, 0.f, 0.f),
-                   Vector4f(0.f, 0.f, 1.f, 0.f), Vector4f(1.f, 1.f, 0.f, 0.f)};
-
-      ////vertex normal
-      std::vector<Vector3> &vtx_normal = mesh_obj->vtx_normal;
-      vtx_normal = {Vector3(0., 1., 0.), Vector3(0., 1., 0.),
-                    Vector3(0., 1., 0.), Vector3(0., 1., 0.)};
-
-      ////vertex uv
-      std::vector<Vector2> &uv = mesh_obj->mesh.Uvs();
-      uv = {Vector2(0., 0.), Vector2(1., 0.), Vector2(0., 1.), Vector2(1., 1.)};
-
-      ////mesh elements
-      std::vector<Vector3i> &elements = mesh_obj->mesh.Elements();
-      elements = {Vector3i(0, 1, 3), Vector3i(0, 3, 2)};
-
-      mesh_obj->model_matrix = glm::mat4(
-          1.f, 0.f, 0.f, 0.f, ////column 0
-          0.f, 1.f, 0.f, 0.f, ////column 1
-          0.f, 0.f, 1.f, 0.f, ////column 2
-          0.f, 1.f, 0.f,
-          1.f); ////column 3	////set the translation in the last column
-
-      ////set up shader
-      // mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3_shadow"));//Shadow
-      // TODO: uncomment this line and comment next line to use shadow shader
-
-      ////set up texture
-
-      ////initialize
       mesh_obj->Set_Data_Refreshed();
-      mesh_obj->Initialize();
     }
     return (int)smoke_particle_array.size() - 1;
   }
@@ -503,6 +505,7 @@ public:
     Plane_Object();
     Plane_Wings_Object();
     Add_Sky_Sphere();
+    Add_Volcano();
 
     Add_Particle_Renderer();
 
