@@ -90,10 +90,10 @@ public:
         "airplane_wings.jpg", "plane_wings_albedo");
     OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
         "airplane_wings.jpg", "plane_wings_normal");
-		 OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
-        "smoke.png", "smoke_albedo");
-    OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
-        "smoke.png", "smoke_normal");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File("smoke.png",
+                                                            "smoke_albedo");
+    OpenGLTextureLibrary::Instance()->Add_Texture_From_File("smoke.png",
+                                                            "smoke_normal");
     OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
         "airplane_body.jpg", "plane_body_albedo");
     OpenGLTextureLibrary::Instance()->Add_Texture_From_File(
@@ -363,8 +363,8 @@ public:
 
       ////vertex color
       std::vector<Vector4f> &vtx_color = mesh_obj->vtx_color;
-      vtx_color = {Vector4f(1.f, 0.f, 0.f, 1.f), Vector4f(0.f, 1.f, 0.f, 1.f),
-                   Vector4f(0.f, 0.f, 1.f, 1.f), Vector4f(1.f, 1.f, 0.f, 1.f)};
+      vtx_color = {Vector4f(1.f, 1.f, 0.f, 1.f), Vector4f(0.f, 1.f, 0.f, 1.f),
+                   Vector4f(0.f, 1.f, 1.f, 1.f), Vector4f(1.f, 1.f, 0.f, 1.f)};
 
       ////vertex normal
       std::vector<Vector3> &vtx_normal = mesh_obj->vtx_normal;
@@ -375,31 +375,26 @@ public:
       std::vector<Vector2> &uv = mesh_obj->mesh.Uvs();
       uv = {Vector2(0., 0.), Vector2(1., 0.), Vector2(0., 1.), Vector2(1., 1.)};
 
-		////set up shader
-		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
-		
-		////set up texture
-		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("smoke_albedo"));
-		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("smoke_normal"));
-		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
-		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: Set Shading Mode to Shadow
+      ////mesh elements
+      std::vector<Vector3i> &elements = mesh_obj->mesh.Elements();
+      elements = {Vector3i(0, 1, 3), Vector3i(0, 3, 2)};
 
-		////initialize
-		////initialize
-		mesh_obj->Set_Data_Refreshed();
-		mesh_obj->Initialize();	
+      ////set up shader
+      // mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3_shadow"));//Shadow
+      // TODO: uncomment this line and comment next line to use shadow shader
+      mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
 
       ////set up texture
-      mesh_obj->Add_Texture(
-          "tex_albedo", OpenGLTextureLibrary::Get_Texture("object_3_albedo"));
-      mesh_obj->Add_Texture(
-          "tex_normal", OpenGLTextureLibrary::Get_Texture("object_3_normal"));
+      mesh_obj->Add_Texture("tex_albedo",
+                            OpenGLTextureLibrary::Get_Texture("smoke_albedo"));
+      mesh_obj->Add_Texture("tex_normal",
+                            OpenGLTextureLibrary::Get_Texture("smoke_normal"));
       Set_Polygon_Mode(mesh_obj, PolygonMode::Fill);
       Set_Shading_Mode(
           mesh_obj,
           ShadingMode::Texture); // SHADOW TODO: Set Shading Mode to Shadow
 
+      ////initialize
       ////initialize
       mesh_obj->Set_Data_Refreshed();
       mesh_obj->Initialize();
@@ -408,7 +403,6 @@ public:
     }
     return (int)smoke_particle_array.size() - 1;
   }
-
   int UpdateSmokeParticles(std::vector<Vector3> particlePos) {
     std::cout << smoke_particle_array.size() << std::endl;
     for (int i = 0; i < particlePos.size(); i++) {
@@ -425,16 +419,47 @@ public:
       std::vector<Vector3> &vertices = mesh_obj->mesh.Vertices();
       vertices = triangle_vertices;
 
+      ////vertex color
+      std::vector<Vector4f> &vtx_color = mesh_obj->vtx_color;
+      vtx_color = {Vector4f(1.f, 0.f, 0.f, 0.f), Vector4f(0.f, 1.f, 0.f, 0.f),
+                   Vector4f(0.f, 0.f, 1.f, 0.f), Vector4f(1.f, 1.f, 0.f, 0.f)};
+
+      ////vertex normal
+      std::vector<Vector3> &vtx_normal = mesh_obj->vtx_normal;
+      vtx_normal = {Vector3(0., 1., 0.), Vector3(0., 1., 0.),
+                    Vector3(0., 1., 0.), Vector3(0., 1., 0.)};
+
+      ////vertex uv
+      std::vector<Vector2> &uv = mesh_obj->mesh.Uvs();
+      uv = {Vector2(0., 0.), Vector2(1., 0.), Vector2(0., 1.), Vector2(1., 1.)};
+
+      ////mesh elements
+      std::vector<Vector3i> &elements = mesh_obj->mesh.Elements();
+      elements = {Vector3i(0, 1, 3), Vector3i(0, 3, 2)};
+
+      mesh_obj->model_matrix = glm::mat4(
+          1.f, 0.f, 0.f, 0.f, ////column 0
+          0.f, 1.f, 0.f, 0.f, ////column 1
+          0.f, 0.f, 1.f, 0.f, ////column 2
+          0.f, 1.f, 0.f,
+          1.f); ////column 3	////set the translation in the last column
+
+      ////set up shader
+      // mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3_shadow"));//Shadow
+      // TODO: uncomment this line and comment next line to use shadow shader
+
+      ////set up texture
+
       ////initialize
       mesh_obj->Set_Data_Refreshed();
-      // mesh_obj->Initialize();
+      mesh_obj->Initialize();
     }
     return (int)smoke_particle_array.size() - 1;
   }
 
   void Add_Particle_Renderer() {
-    smoke_sim = new SmokeSimulation(Vector3(10., 10., 10.),
-                                    Vector3i(10, 10, 10), 10000);
+    smoke_sim =
+        new SmokeSimulation(Vector3(10., 10., 10.), Vector3i(10, 10, 10), 1000);
     CreateSmokeParticles(smoke_sim->particlePos);
     SmokeSimulation &ref = *smoke_sim;
     particle_renderer = new ParticleRenderer(ref, 100);
