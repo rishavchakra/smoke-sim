@@ -8,7 +8,7 @@
 #include "field.h"
 #include "glad.h"
 #include "particle.h"
-class SmokeSimulation {
+struct SmokeSimulation {
   // OpenGL buffers for particle information
   GLuint feedback[2];
   GLuint buf_pos[2]; // Position buffers
@@ -24,15 +24,16 @@ class SmokeSimulation {
   Field fTemp;
   VectorField fVel;
 
-  std::vector<Particle> particles;
+  std::vector<Vector3> particlePos;
+  std::vector<Vector3> particleVel;
 
-public:
   // Constructor
   SmokeSimulation(Vector3 size, Vector3i resolution, int numParticles);
   // Destructor
   ~SmokeSimulation();
   // Step forward in the physics simulation by a timestep dt
-  void step(float dt);
+  public:
+    void step(float dt);
 
 protected:
   void advect_density(float dt);

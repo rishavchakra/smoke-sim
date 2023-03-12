@@ -17,6 +17,8 @@
 #include "OpenGLViewer.h"
 #include "OpenGLMarkerObjects.h"
 #include "TinyObjLoader.h"
+#include "./smokesim/smokesim.h"
+#include "./smokesim/particle_renderer.h"
 
 #ifndef __Main_cpp__
 #define __Main_cpp__
@@ -28,12 +30,9 @@
 
 class FinalProjectDriver : public Driver, public OpenGLViewer
 {using Base=Driver;
-	std::vector<OpenGLTriangleMesh*> mesh_object_array;						////mesh objects, every object you put in this array will be rendered.
+	std::vector<OpenGLTriangleMesh*> mesh_object_array;	
+	std::vector<ParticleRenderer> particle_renderer_array;
 	clock_t startTime;
-	GLuint billboard_vertex_buffer;
-	GLuint particles_position_buffer;
-	GLuint particles_color_buffer;
-	int ParticlesCount;
 
 
 public:
@@ -42,6 +41,7 @@ public:
 		draw_bk=false;						////turn off the default background and use the customized one
 		draw_axes=true;						////if you don't like the axes, turn them off!
 		startTime=clock();
+
 		OpenGLViewer::Initialize();
 	}
 
@@ -294,80 +294,11 @@ public:
 		return (int)mesh_object_array.size()-1;
 	}
 
-	void Add_Particles_Buffer(){
-		static const GLfloat g_vertex_buffer_data[] = {
-			-0.5f, -0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-			-0.5f, 0.5f, 0.0f,
-			0.5f, 0.5f, 0.0f,
-		};
-		glGenBuffers(1, &billboard_vertex_buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-		// The VBO containing the positions and sizes of the particles
-		GLuint particles_position_buffer;
-		glGenBuffers(1, &particles_position_buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-		// Initialize with empty (NULL) buffer : it will be updated later, each frame.
-		glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
-
-		// The VBO containing the colors of the particles
-		GLuint particles_color_buffer;
-		glGenBuffers(1, &particles_color_buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-		// Initialize with empty (NULL) buffer : it will be updated later, each frame.
-		glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
-
-		
-	}
-
-	void Update_Particles_Buffer(){
-		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-		glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-		glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 4, g_particule_position_size_data);
-
-		glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-		glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-		glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLubyte) * 4, g_particule_color_data);
-	}
-
-	void Bind_Particles_Buffer(){
-		// 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-		glVertexAttribPointer(
-		0, // attribute. No particular reason for 0, but must match the layout in the shader.
-		3, // size
-		GL_FLOAT, // type
-		GL_FALSE, // normalized?
-		0, // stride
-		(void*)0 // array buffer offset
-		);
-
-		// 2nd attribute buffer : positions of particles' centers
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-		glVertexAttribPointer(
-		1, // attribute. No particular reason for 1, but must match the layout in the shader.
-		4, // size : x + y + z + size => 4
-		GL_FLOAT, // type
-		GL_FALSE, // normalized?
-		0, // stride
-		(void*)0 // array buffer offset
-		);
-
-		// 3rd attribute buffer : particles' colors
-		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-		glVertexAttribPointer(
-		2, // attribute. No particular reason for 1, but must match the layout in the shader.
-		4, // size : r + g + b + a => 4
-		GL_UNSIGNED_BYTE, // type
-		GL_TRUE, // normalized? *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
-		0, // stride
-		(void*)0 // array buffer offset
-		);
+	void Add_Particle_Renderer() {
+		SmokeSimulation simulation = SmokeSimulation(Vector3(1000., 1000., 1000.), Vector3i(1000., 1000., 100.), 100000);
+		SmokeSimulation &ref = simulation;
+		ParticleRenderer particle_renderer = ParticleRenderer(ref, 100000);
+		particle_renderer_array.push_back(particle_renderer);
 	}
 
 	void Init_Lighting() {
@@ -403,7 +334,10 @@ public:
 		Plane_Wings_Object();
 		Add_Sky_Sphere();
 
-		Add_Particles_Buffer();
+		Add_Particle_Renderer();
+
+
+
 
 		Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}
@@ -415,14 +349,15 @@ public:
 		for (auto& mesh_obj : mesh_object_array) {
 			mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
 		}
+		for(auto renderer: particle_renderer_array){
+			renderer.smoke_sim.step(1.); 
+			renderer.update_buffers();
+			renderer.draw();
+		}
 		// These functions are specific to glDrawArrays*Instanced*.
 		// The first parameter is the attribute buffer we're talking about.
 		// The second parameter is the "rate at which generic vertex attributes advance when rendering multiple instances"
 		// http://www.opengl.org/sdk/docs/man/xhtml/glVertexAttribDivisor.xml
-		glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
-		glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
-		glVertexAttribDivisor(2, 1); // color : one per quad -> 1
-		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
 		OpenGLViewer::Toggle_Next_Frame();
 	}
 
