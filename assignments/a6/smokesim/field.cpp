@@ -3,23 +3,27 @@
 #include "detail/func_common.hpp"
 
 Field::Field(Vector3 size, Vector3i resolution)
-    : size(size), resolution(resolution) {
-  this->data = new float **[resolution.x()];
-  for (int x = 0; x < this->resolution.x(); x++) {
-    this->data[x] = new float *[resolution.y()];
-    for (int y = 0; y < this->resolution.y(); y++) {
-      this->data[x][y] = new float[resolution.z()];
-    }
-  }
+    : size(size), resolution(resolution),
+      data_grid(std::vector<std::vector<std::vector<float>>>(
+          resolution.x(),
+          std::vector<std::vector<float>>(
+              resolution.y(), std::vector<float>(resolution.z(), 0.)))) {
+  // this->data = new float **[resolution.x()];
+  // for (int x = 0; x < this->resolution.x(); x++) {
+  //   this->data[x] = new float *[resolution.y()];
+  //   for (int y = 0; y < this->resolution.y(); y++) {
+  //     this->data[x][y] = new float[resolution.z()];
+  //   }
+  // }
 }
 
 Field::~Field() {
-  for (int x = 0; x < this->resolution.x(); x++) {
-    for (int y = 0; y < this->resolution.y(); y++) {
-      delete[] this->data[x][y];
-    }
-    delete[] this->data[x];
-  }
+  // for (int x = 0; x < this->resolution.x(); x++) {
+  //   for (int y = 0; y < this->resolution.y(); y++) {
+  //     delete[] this->data[x][y];
+  //   }
+  //   delete[] this->data[x];
+  // }
 }
 
 float Field::interp(Vector3 pos) {
@@ -38,21 +42,25 @@ float Field::interp(Vector3 pos) {
 
   // Trilinear interpolation
   return mix(
-      mix(mix(data[indices.x()][indices.y()][indices.z()],
-              data[indices.x()][indices.y()][indices.z() + 1], rem.z()),
-          mix(data[indices.x()][indices.y() + 1][indices.z()],
-              data[indices.x()][indices.y() + 1][indices.z() + 1], rem.z()),
+      mix(mix(data_grid[indices.x()][indices.y()][indices.z()],
+              data_grid[indices.x()][indices.y()][indices.z() + 1], rem.z()),
+          mix(data_grid[indices.x()][indices.y() + 1][indices.z()],
+              data_grid[indices.x()][indices.y() + 1][indices.z() + 1],
+              rem.z()),
           rem.y()),
-      mix(mix(data[indices.x() + 1][indices.y()][indices.z()],
-              data[indices.x()][indices.y()][indices.z() + 1], rem.z()),
-          mix(data[indices.x() + 1][indices.y() + 1][indices.z()],
-              data[indices.x()][indices.y() + 1][indices.z() + 1], rem.z()),
+      mix(mix(data_grid[indices.x() + 1][indices.y()][indices.z()],
+              data_grid[indices.x()][indices.y()][indices.z() + 1], rem.z()),
+          mix(data_grid[indices.x() + 1][indices.y() + 1][indices.z()],
+              data_grid[indices.x()][indices.y() + 1][indices.z() + 1],
+              rem.z()),
           rem.y()),
       rem.x());
 }
 
+Vector3 Field::clipped(Vector3 pos) { return pos; }
+
 void Field::set(Vector3i inds, float val) {
-  this->data[inds.x()][inds.y()][inds.z()] = val;
+  this->data_grid[inds.x()][inds.y()][inds.z()] = val;
 }
 
 VectorField::VectorField(Vector3 size, Vector3i resolution)
@@ -68,3 +76,5 @@ void VectorField::set(Vector3i inds, Vector3 val) {
   this->y.set(inds, val.y());
   this->z.set(inds, val.z());
 }
+
+Vector3 VectorField::clipped(Vector3 pos) { return pos; }
