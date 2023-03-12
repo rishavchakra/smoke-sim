@@ -89,7 +89,7 @@ float height(vec2 v){
 }
 
 float water(vec2 p) {
-    float ht = 0;
+    float h = 0;
     vec2 sh1 = 0.001 * vec2(iTime * 320.0, iTime * 240.0);
     vec2 sh2 = 0.001 * vec2(iTime * 380.0, iTime * -260.0);
 
@@ -103,8 +103,8 @@ float water(vec2 p) {
     wave *= 1.0;
     wave -= noiseOctave(p * 0.005 - sh2 * 0.5, 6) * 1.0 * 25.;
     
-    ht += wave;
-    return ht;
+    h += wave;
+    return h;
 }
 
 ///////////// Part 2b /////////////////////
@@ -130,13 +130,13 @@ vec3 get_color(vec2 v)
 {
 	float h = water(v);
 	vec3 vtx_normal = compute_normal(v, 0.01);
-	vec3 emissiveColor = mix(vec3(0, 0, 0.6), vec3(0, 0, 0.9), h / 100);
+	vec3 emissiveColor = mix(vec3(0, 0.25, 0.6), vec3(0, 0.25, 0.9), h / 100);
 	vec3 lightingColor= vec3(1.,1.,1.);
 	// Your implementation starts here
 	
 	/*This part is the same as your previous assignment. Here we provide a default parameter set for the hard-coded lighting environment. Feel free to change them.*/
-	const vec3 LightPosition = vec3(0, 0, 5000);
-	const vec3 LightIntensity = vec3(60000000);
+	const vec3 LightPosition = vec3(0, 0, 10000);
+	const vec3 LightIntensity = vec3(200000000);
 	const vec3 ka = 0.1*vec3(1., 1., 1.);
 	const vec3 kd = 0.7*vec3(1., 1., 1.);
 	const vec3 ks = vec3(2.);
