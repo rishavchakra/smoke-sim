@@ -115,12 +115,15 @@ ParticleRender::ParticleRender(SmokeSimulation &smoke_sim, int num_particles)
     : smoke_sim(smoke_sim), num_particles(num_particles),
       points(OpenGLPoints()) {
   points.Initialize();
+  points.Set_Data_Pointers(&smoke_sim.particlePos);
+  points.Update_Data_To_Render();
 }
 
 void ParticleRender::draw() { points.Display(); }
 
 void ParticleRender::update_buffers() {
   points.Set_Data_Pointers(&smoke_sim.particlePos);
+  points.Update_Data_To_Render();
 }
 
 void ParticleRender::step() {
