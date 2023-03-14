@@ -311,13 +311,15 @@ public:
   int Add_Object_Wave() {
     ////add the plane mesh object
     int obj_idx = Add_Obj_Mesh_Object("wave.obj");
-    auto plane_obj = mesh_object_array[obj_idx];
-    plane_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("wave"));
+    auto wave_obj = mesh_object_array[obj_idx];
+    wave_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("wave"));
 
-    Set_Polygon_Mode(plane_obj, PolygonMode::Fill);
-    Set_Shading_Mode(plane_obj, ShadingMode::Texture);
-    plane_obj->Set_Data_Refreshed();
-    plane_obj->Initialize();
+    wave_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("sky_sphere_albedo"));
+
+    Set_Polygon_Mode(wave_obj, PolygonMode::Fill);
+    Set_Shading_Mode(wave_obj, ShadingMode::Texture);
+    wave_obj->Set_Data_Refreshed();
+    wave_obj->Initialize();
   }
 
   int Add_Volcano() {
@@ -448,10 +450,6 @@ public:
 
       ////vertex position
       std::vector<Vector3> triangle_vertices = {
-          particlePos[i] + Vector3(-1, -1, 1),
-          particlePos[i] + Vector3(-1, 1, 1),
-          particlePos[i] + Vector3(1, -1, 1),
-          particlePos[i] + Vector3(1, 1, 1)};
           particlePos[i] + Vector3(0, -20, -20),
           particlePos[i] + Vector3(0, -20, 20),
           particlePos[i] + Vector3(0, 20, -20),

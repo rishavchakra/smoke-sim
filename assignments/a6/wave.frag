@@ -10,77 +10,14 @@ layout (std140) uniform camera
 };
 /*uniform variables*/
 uniform float iTime;					////time
+uniform sampler2D tex_albedo;			////texture color
 /*input variables*/
 in vec3 vtx_pos;
+
 /*input variables*/
 out vec4 frag_color;
 
-// struct ray {
-//     vec3 o;
-//     vec3 d;
-// };
-
-// struct light {
-//    vec3 position;		////point light position
-//    vec3 color;			////point light color
-// };
-
-// struct hit {
-//     float t;			////parameter in the ray function
-//     vec3 p;				////intersection point
-//     vec3 normal;		////normal on the intersection point
-//     vec3 color;			////color of the intersecting object
-// };
-
-// const float minT = 0.001;
-// const float maxT = 1e8;
-// const int numberOfSampling = 50;
-// ////if no hit is detected, return dummyHit
-// const hit dummyHit = hit(-1.0, vec3(0), vec3(0), vec3(0));
-// ////calculate the ray for a given uv coordinate
-// ray getRay(camera c, vec2 uv)
-// {
-//     return ray(c.origin, c.LowerLeftCorner + uv.x * c.horizontal + uv.y * c.vertical - c.origin);
-// }
-
-// hit hitPlane(ray r, vec3 p, vec3 n) {
-// 	hit h;
-// 	float t = -1 * (dot(r.o - p), n) / (dot(r.d, n));
-// 	if (t > 0) {
-// 		h.t = t;
-// 	}
-// 	else {
-// 		h.t = dummyHit.t;
-// 	}
-
-// 	h.p = r.o + h.t * r.d;
-// 	h.normal = n;
-// 	return h;
-// }
-
-// vec3 hitColor(ray r, vec3 p, vec3 n, light l) {
-// 	float K_A = 0.25;
-// 	float K_D = 1;
-	
-// 	vec3 L_sum = vec3(0);
-// 	hit h = hitPlane(r, p, n);
-// 	if (h.t > 0) {
-// 		vec3 I_a = h.color;
-// 		vec3 I_d = h.color;
-
-// 		ray shadowRay = ray(h.p, (l.position - h.p));
-// 		hit shadowHit = hitPlane(shadowRay, p, n);
-// 		if (shadowHit.t < 0) {
-// 			vec3 l_j = normalize(l.position - h.p);
-// 			float l_dot_n = dot(l_j, n);
-// 			float diff = max(0, l_dot_n);
-// 			L_sum = L_sum + K_D * I_d * diff;
-// 		}
-// 		L_sum = L_sum + K_A * I_A
-// 	}
-
-// 	return L_sum;
-// }
+const float PI = atan(1.0) * 4;
 
 ///////////// Part 1a /////////////////////
 /* Create a function that takes in an xy coordinate and returns a 'random' 2d vector. (There is no right answer)
@@ -145,17 +82,6 @@ float noiseOctave(vec2 v, int num)
     If you want jagged mountains, use a function like e^(noiseOctave(v,num))
     You can also add functions on top of each other and change the frequency of the noise
     by multiplying v by some value other than 1*/
-float height(vec2 v){
-    float h = 0;
-	// Your implementation starts here
-	h = 0.75 * noiseOctave(v, 3);
-	if (h < 0) {
-		h = -0.5 * h;
-	}
-	// Your implementation ends here
-	return h;
-}
-
 float water(vec2 p) {
     float h = 0;
     vec2 sh1 = 0.001 * vec2(iTime * 320.0, iTime * 240.0);
@@ -191,37 +117,70 @@ vec3 compute_normal(vec2 v, float d)
 	return normal_vector;
 }
 
+vec4 sphere_map(vec3 n) {
+	float x = n.x;
+	float y = n.y;
+	float z = n.z;
+	float r = sqrt(x*x + y*y + z*z);
+	float theta = 0;
+	if (r != 0) {
+		theta = acos(z / r);
+	}
+	float phi = 0;
+	if (x != 0 || y != 0) {
+		phi = acos(x / (sqrt(x * x + y * y)));
+		if (y < 0) {
+			phi = -1 * phi;
+		}
+	}
+	float u = phi / (2 * PI);
+	float v = theta / PI;
+	vec2 uv = vec2(u, v);
+	
+	vec4 texture_color = texture(tex_albedo, uv);
+	return vec4(texture_color.rgb, 1.f);
+}
+
 ///////////// Part 2c /////////////////////
 /* complete the get_color function by setting emissiveColor using some function of height/normal vector/noise */
 /* put your Phong/Lambertian lighting model here to synthesize the lighting effect onto the terrain*/
-vec3 get_color(vec2 v)
+vec3 get_color(vec3 v)
 {
-	float h = water(v);
-	vec3 vtx_normal = compute_normal(v, 0.01);
-	vec3 emissiveColor = mix(vec3(0, 0.25, 0.6), vec3(0, 0.25, 0.9), h / 100);
-	vec3 lightingColor= vec3(1.,1.,1.);
 	// Your implementation starts here
 	
 	/*This part is the same as your previous assignment. Here we provide a default parameter set for the hard-coded lighting environment. Feel free to change them.*/
 	const vec3 LightPosition = vec3(0, 0, 10000);
-	const vec3 LightIntensity = vec3(200000000);
+	const vec3 LightIntensity = vec3(100000000);
 	const vec3 ka = 0.1*vec3(1., 1., 1.);
 	const vec3 kd = 0.7*vec3(1., 1., 1.);
-	const vec3 ks = vec3(2.);
-	const float n = 400.0;
+	const vec3 ks = vec3(100.);
+	const float n = 40.0;
+	vec3 vtx_normal = compute_normal(v.xy, 0.01);
+	// vec3 vtx_normal = compute_water_normals(v.xy);
 	vec3 normal = normalize(vtx_normal.xyz);
+
 	vec3 lightDir = LightPosition - vtx_pos;
 	float _lightDist = length(lightDir);
 	vec3 _lightDir = normalize(lightDir);
 	vec3 _localLight = LightIntensity / (_lightDist * _lightDist);
 	vec3 ambColor = ka;
-	lightingColor = kd * _localLight * max(0., dot(_lightDir, normal));
+	vec3 lightingColor = kd * _localLight * max(0., dot(_lightDir, normal));
+
+	vec3 emissiveColor = mix(vec3(0, 0.25, 0.5), vec3(0, 0.25, 0.9), 1 - max(0., dot(_lightDir, normal)));
+	vec3 rflect = reflect(_lightDir, normal);
+	vec4 reflectColor = sphere_map(rflect);
+	vec3 rfract = refract(_lightDir, normal, 1.33);
+	vec4 refractColor = sphere_map(rfract);
+	float R_0 = 0.02037;
+	float fresnelCoeff = R_0 + (1 - R_0) * pow(1 - max(0., dot(_lightDir, normal)), 5.);
+
+	emissiveColor = emissiveColor + reflectColor.rgb * fresnelCoeff + refractColor.rgb * (1 - fresnelCoeff);
+
 	// Your implementation ends here
     return emissiveColor*lightingColor;
 	// return emissiveColor;
 }
 void main()
 {
-	frag_color = vec4(get_color(vtx_pos.xy),1.f);
-	// frag_color = vec4(0.0, 0.0, 1.0, 1.f);
+	frag_color = vec4(get_color(vtx_pos),1.f);
 }
