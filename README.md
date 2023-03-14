@@ -1,4 +1,6 @@
-# COSC 77/277 Computer Graphics Starter Code Manual
+# Dartmouth COSC 77/277 Computer Graphics Final Project
+
+Eric Lu, Rishav Chakravarty, Camden Hao
 
 ## 0. Quick Guide
 

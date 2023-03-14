@@ -87,10 +87,6 @@ float noiseOctave(vec2 v, int num)
     return sum;
 }
 
-/*constant variables*/
-float LENGTH = 10;
-float WIDTH = 10;
-
 ///////////// Part 2a /////////////////////
 /* create a function that takes in a 2D point and returns a height using perlin noise
     There is no right answer. Think about what functions will create what shapes.
@@ -98,18 +94,6 @@ float WIDTH = 10;
     If you want jagged mountains, use a function like e^(noiseOctave(v,num))
     You can also add functions on top of each other and change the frequency of the noise
     by multiplying v by some value other than 1*/
-float height(vec2 v){
-    float h = 0;
-    // Your implementation starts here
-    h = pow(0.75, noiseOctave(v, 3));
-    if (h < 0) {
-        h = -0.5 * h;
-    }
-
-    // Your implementation ends here
-    return h;
-}
-
 float water(vec2 p) {
     float h = 0;
     vec2 sh1 = 0.001 * vec2(iTime * 320.0, iTime * 240.0);

@@ -84,6 +84,12 @@ public:
                                                           "wave.frag", "wave");
 
     OpenGLShaderLibrary::Instance()->Add_Shader_From_File("volcano.vert","volcano.frag","volcano");
+
+    OpenGLShaderLibrary::Instance()->Add_Shader_From_File("particle.vert","particle.frag","particle");
+    
+    OpenGLShaderLibrary::Instance()->Add_Shader_From_File("plane_body.vert","plane_body.frag","plane_body");
+		
+    OpenGLShaderLibrary::Instance()->Add_Shader_From_File("plane_wing.vert","plane_wing.frag","plane_wing");
   }
 
   void Add_Textures() {
@@ -156,7 +162,7 @@ public:
     ////set up shader
     // mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow
     // TODO: uncomment this line and comment next line to use shadow shader
-    mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("plane_body"));
 
     ////set up texture
     mesh_obj->Add_Texture(
@@ -208,7 +214,7 @@ public:
     ////set up shader
     // mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow
     // TODO: uncomment this line and comment next line to use shadow shader
-    mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("plane_wing"));
 
     ////set up texture
     mesh_obj->Add_Texture(
@@ -311,13 +317,15 @@ public:
   int Add_Object_Wave() {
     ////add the plane mesh object
     int obj_idx = Add_Obj_Mesh_Object("wave.obj");
-    auto plane_obj = mesh_object_array[obj_idx];
-    plane_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("wave"));
+    auto wave_obj = mesh_object_array[obj_idx];
+    wave_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("wave"));
 
-    Set_Polygon_Mode(plane_obj, PolygonMode::Fill);
-    Set_Shading_Mode(plane_obj, ShadingMode::Texture);
-    plane_obj->Set_Data_Refreshed();
-    plane_obj->Initialize();
+    wave_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("sky_sphere_albedo"));
+
+    Set_Polygon_Mode(wave_obj, PolygonMode::Fill);
+    Set_Shading_Mode(wave_obj, ShadingMode::Texture);
+    wave_obj->Set_Data_Refreshed();
+    wave_obj->Initialize();
   }
 
   int Add_Volcano() {
@@ -399,8 +407,8 @@ public:
 
       ////vertex color
       std::vector<Vector4f> &vtx_color = mesh_obj->vtx_color;
-      vtx_color = {Vector4f(1.f, 1.f, 0.f, 1.f), Vector4f(0.f, 1.f, 0.f, 1.f),
-                   Vector4f(0.f, 1.f, 1.f, 1.f), Vector4f(1.f, 1.f, 0.f, 1.f)};
+      vtx_color = {Vector4f(1.0, 0.647, 0, 1.f), Vector4f(1.0, 0.647, 0, 1.f),
+                   Vector4f(1.0, 0.647, 0, 1.f), Vector4f(1.0, 0.647, 0, 1.f)};
 
       ////vertex normal
       std::vector<Vector3> &vtx_normal = mesh_obj->vtx_normal;
@@ -418,7 +426,7 @@ public:
       ////set up shader
       // mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_3_shadow"));//Shadow
       // TODO: uncomment this line and comment next line to use shadow shader
-      mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
+      mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("particle"));
 
       ////set up texture
       mesh_obj->Add_Texture("tex_albedo",
@@ -439,6 +447,7 @@ public:
     }
     return (int)smoke_particle_array.size() - 1;
   }
+
   int UpdateSmokeParticles(std::vector<Vector3> particlePos) {
     std::cout << smoke_particle_array.size() << std::endl;
     for (int i = 0; i < particlePos.size(); i++) {
@@ -448,10 +457,6 @@ public:
 
       ////vertex position
       std::vector<Vector3> triangle_vertices = {
-          particlePos[i] + Vector3(-1, -1, 1),
-          particlePos[i] + Vector3(-1, 1, 1),
-          particlePos[i] + Vector3(1, -1, 1),
-          particlePos[i] + Vector3(1, 1, 1)};
           particlePos[i] + Vector3(0, -20, -20),
           particlePos[i] + Vector3(0, -20, 20),
           particlePos[i] + Vector3(0, 20, -20),
